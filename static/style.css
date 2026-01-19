@@ -117,6 +117,103 @@ main {
     text-decoration: underline;
 }
 
+/* Advanced Filters */
+.advanced-filters {
+    margin-top: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.toggle-filters-btn {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    transition: all 0.2s;
+}
+
+.toggle-filters-btn:hover {
+    background: #e2e8f0;
+    color: var(--text);
+}
+
+.toggle-filters-btn.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.toggle-filters-btn.has-filters {
+    background: #dbeafe;
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.toggle-filters-btn.has-filters::after {
+    content: ' •';
+    color: var(--primary);
+}
+
+.filter-panel {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 0.75rem;
+    padding: 1rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    align-items: flex-end;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.filter-group label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.filter-group select {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    background: white;
+    cursor: pointer;
+    min-width: 140px;
+}
+
+.filter-group select:focus {
+    border-color: var(--primary);
+    outline: none;
+}
+
+.clear-filters-btn {
+    padding: 0.5rem 1rem;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+
+.clear-filters-btn:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
+    color: #dc2626;
+}
+
 /* Results Section */
 .results-section {
     margin-top: 2rem;

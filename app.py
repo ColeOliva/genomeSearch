@@ -33,9 +33,13 @@ def index():
 
 @app.route('/search')
 def search():
-    """Search genes by keyword, optionally filtered by species."""
+    """Search genes by keyword, optionally filtered by species and other criteria."""
     query = request.args.get('q', '').strip()
-    species = request.args.get('species', '').strip()  # tax_id or empty for all
+    species = request.args.get('species', '').strip()
+    chromosome = request.args.get('chromosome', '').strip()
+    constraint = request.args.get('constraint', '').strip()
+    clinical = request.args.get('clinical', '').strip()
+    gene_type = request.args.get('gene_type', '').strip()
     
     if not query:
         return jsonify({'results': [], 'query': query})
@@ -44,72 +48,79 @@ def search():
     cursor = conn.cursor()
     
     # Use FTS5 full-text search
-    # Escape special FTS5 characters and add prefix matching
     safe_query = query.replace('"', '""')
     fts_query = f'"{safe_query}"*'
     
+    # Build dynamic WHERE clause for filters
+    filters = []
+    params = [fts_query]
+    
+    if species:
+        filters.append("g.tax_id = ?")
+        params.append(int(species))
+    
+    if chromosome:
+        filters.append("g.chromosome = ?")
+        params.append(chromosome)
+    
+    if constraint == 'essential':
+        filters.append("gc.pli > 0.9")
+    elif constraint == 'constrained':
+        filters.append("gc.loeuf < 0.35")
+    elif constraint == 'tolerant':
+        filters.append("(gc.pli IS NULL OR gc.pli <= 0.5)")
+    
+    if clinical == 'pathogenic':
+        filters.append("cv.pathogenic_alleles > 0")
+    elif clinical == 'gwas':
+        filters.append("(SELECT COUNT(*) FROM gene_traits gt WHERE gt.gene_id = g.gene_id) > 0")
+    elif clinical == 'disease':
+        filters.append("(cv.pathogenic_alleles > 0 OR (SELECT COUNT(*) FROM gene_traits gt WHERE gt.gene_id = g.gene_id) > 0)")
+    
+    if gene_type == 'protein-coding':
+        filters.append("g.gene_type = 'protein-coding'")
+    elif gene_type == 'pseudo':
+        filters.append("g.gene_type LIKE '%pseudo%'")
+    elif gene_type == 'ncRNA':
+        filters.append("(g.gene_type LIKE '%RNA%' OR g.gene_type LIKE '%ncRNA%')")
+    elif gene_type == 'other':
+        filters.append("g.gene_type NOT IN ('protein-coding') AND g.gene_type NOT LIKE '%pseudo%' AND g.gene_type NOT LIKE '%RNA%'")
+    
+    where_clause = "gene_fts MATCH ?"
+    if filters:
+        where_clause += " AND " + " AND ".join(filters)
+    
     try:
-        if species:
-            cursor.execute('''
-                SELECT g.gene_id, g.tax_id, g.symbol, g.name, g.chromosome, 
-                       g.map_location, g.description, g.gene_type,
-                       s.common_name as species_name,
-                       snippet(gene_fts, 1, '<mark>', '</mark>', '...', 32) as matched_text,
-                       (SELECT COUNT(*) FROM gene_traits gt WHERE gt.gene_id = g.gene_id) as trait_count,
-                       gc.pli, gc.loeuf,
-                       cv.pathogenic_alleles as clinvar_pathogenic
-                FROM gene_fts
-                JOIN genes g ON gene_fts.gene_id = g.gene_id
-                JOIN species s ON g.tax_id = s.tax_id
-                LEFT JOIN gene_constraints gc ON g.gene_id = gc.gene_id
-                LEFT JOIN clinvar_gene_summary cv ON g.gene_id = cv.gene_id
-                WHERE gene_fts MATCH ? AND g.tax_id = ?
-                ORDER BY rank
-                LIMIT 100
-            ''', (fts_query, int(species)))
-        else:
-            cursor.execute('''
-                SELECT g.gene_id, g.tax_id, g.symbol, g.name, g.chromosome, 
-                       g.map_location, g.description, g.gene_type,
-                       s.common_name as species_name,
-                       snippet(gene_fts, 1, '<mark>', '</mark>', '...', 32) as matched_text,
-                       (SELECT COUNT(*) FROM gene_traits gt WHERE gt.gene_id = g.gene_id) as trait_count,
-                       gc.pli, gc.loeuf,
-                       cv.pathogenic_alleles as clinvar_pathogenic
-                FROM gene_fts
-                JOIN genes g ON gene_fts.gene_id = g.gene_id
-                JOIN species s ON g.tax_id = s.tax_id
-                LEFT JOIN gene_constraints gc ON g.gene_id = gc.gene_id
-                LEFT JOIN clinvar_gene_summary cv ON g.gene_id = cv.gene_id
-                WHERE gene_fts MATCH ?
-                ORDER BY rank
-                LIMIT 100
-            ''', (fts_query,))
+        cursor.execute(f'''
+            SELECT g.gene_id, g.tax_id, g.symbol, g.name, g.chromosome, 
+                   g.map_location, g.description, g.gene_type,
+                   s.common_name as species_name,
+                   snippet(gene_fts, 1, '<mark>', '</mark>', '...', 32) as matched_text,
+                   (SELECT COUNT(*) FROM gene_traits gt WHERE gt.gene_id = g.gene_id) as trait_count,
+                   gc.pli, gc.loeuf,
+                   cv.pathogenic_alleles as clinvar_pathogenic
+            FROM gene_fts
+            JOIN genes g ON gene_fts.gene_id = g.gene_id
+            JOIN species s ON g.tax_id = s.tax_id
+            LEFT JOIN gene_constraints gc ON g.gene_id = gc.gene_id
+            LEFT JOIN clinvar_gene_summary cv ON g.gene_id = cv.gene_id
+            WHERE {where_clause}
+            ORDER BY rank
+            LIMIT 100
+        ''', params)
         
         results = [dict(row) for row in cursor.fetchall()]
     except sqlite3.OperationalError:
         # Fallback to simple LIKE search if FTS fails
-        if species:
-            cursor.execute('''
-                SELECT g.gene_id, g.tax_id, g.symbol, g.name, g.chromosome, 
-                       g.map_location, g.description, g.gene_type,
-                       s.common_name as species_name
-                FROM genes g
-                JOIN species s ON g.tax_id = s.tax_id
-                WHERE (g.symbol LIKE ? OR g.name LIKE ? OR g.description LIKE ?)
-                AND g.tax_id = ?
-                LIMIT 100
-            ''', (f'%{query}%', f'%{query}%', f'%{query}%', int(species)))
-        else:
-            cursor.execute('''
-                SELECT g.gene_id, g.tax_id, g.symbol, g.name, g.chromosome, 
-                       g.map_location, g.description, g.gene_type,
-                       s.common_name as species_name
-                FROM genes g
-                JOIN species s ON g.tax_id = s.tax_id
-                WHERE g.symbol LIKE ? OR g.name LIKE ? OR g.description LIKE ?
-                LIMIT 100
-            ''', (f'%{query}%', f'%{query}%', f'%{query}%'))
+        cursor.execute('''
+            SELECT g.gene_id, g.tax_id, g.symbol, g.name, g.chromosome, 
+                   g.map_location, g.description, g.gene_type,
+                   s.common_name as species_name
+            FROM genes g
+            JOIN species s ON g.tax_id = s.tax_id
+            WHERE g.symbol LIKE ? OR g.name LIKE ? OR g.description LIKE ?
+            LIMIT 100
+        ''', (f'%{query}%', f'%{query}%', f'%{query}%'))
         results = [dict(row) for row in cursor.fetchall()]
     
     conn.close()

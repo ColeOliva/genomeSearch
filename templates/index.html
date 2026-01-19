@@ -24,6 +24,74 @@
                 </select>
                 <button id="search-btn">Search</button>
             </div>
+            
+            <!-- Advanced Filters -->
+            <div class="advanced-filters">
+                <button id="toggle-filters" class="toggle-filters-btn">⚙️ Filters</button>
+                <div id="filter-panel" class="filter-panel hidden">
+                    <div class="filter-group">
+                        <label>Chromosome:</label>
+                        <select id="filter-chromosome">
+                            <option value="">Any</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                            <option value="13">13</option>
+                            <option value="14">14</option>
+                            <option value="15">15</option>
+                            <option value="16">16</option>
+                            <option value="17">17</option>
+                            <option value="18">18</option>
+                            <option value="19">19</option>
+                            <option value="20">20</option>
+                            <option value="21">21</option>
+                            <option value="22">22</option>
+                            <option value="X">X</option>
+                            <option value="Y">Y</option>
+                            <option value="MT">MT</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Constraint:</label>
+                        <select id="filter-constraint">
+                            <option value="">Any</option>
+                            <option value="essential">Essential (pLI &gt; 0.9)</option>
+                            <option value="constrained">Constrained (LOEUF &lt; 0.35)</option>
+                            <option value="tolerant">Tolerant</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Clinical:</label>
+                        <select id="filter-clinical">
+                            <option value="">Any</option>
+                            <option value="pathogenic">Has pathogenic variants</option>
+                            <option value="gwas">Has GWAS associations</option>
+                            <option value="disease">Disease-associated</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Gene Type:</label>
+                        <select id="filter-gene-type">
+                            <option value="">Any</option>
+                            <option value="protein-coding">Protein coding</option>
+                            <option value="pseudo">Pseudogene</option>
+                            <option value="ncRNA">Non-coding RNA</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <button id="clear-filters" class="clear-filters-btn">Clear All</button>
+                </div>
+            </div>
+            
             <div class="search-hints">
                 Try: <a href="#" class="hint">sex determination</a>, 
                 <a href="#" class="hint">breast cancer</a>, 

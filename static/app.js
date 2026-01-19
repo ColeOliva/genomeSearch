@@ -13,6 +13,50 @@ const geneDetail = document.getElementById('gene-detail');
 const detailContent = document.getElementById('detail-content');
 const closeDetail = document.getElementById('close-detail');
 
+// Advanced filter elements
+const toggleFiltersBtn = document.getElementById('toggle-filters');
+const filterPanel = document.getElementById('filter-panel');
+const filterChromosome = document.getElementById('filter-chromosome');
+const filterConstraint = document.getElementById('filter-constraint');
+const filterClinical = document.getElementById('filter-clinical');
+const filterGeneType = document.getElementById('filter-gene-type');
+const clearFiltersBtn = document.getElementById('clear-filters');
+
+// Toggle filter panel
+toggleFiltersBtn.addEventListener('click', () => {
+    filterPanel.classList.toggle('hidden');
+    toggleFiltersBtn.classList.toggle('active');
+});
+
+// Clear all filters
+clearFiltersBtn.addEventListener('click', () => {
+    filterChromosome.value = '';
+    filterConstraint.value = '';
+    filterClinical.value = '';
+    filterGeneType.value = '';
+    updateFilterIndicator();
+    if (searchInput.value.trim()) {
+        performSearch(searchInput.value);
+    }
+});
+
+// Update filter indicator
+function updateFilterIndicator() {
+    const hasFilters = filterChromosome.value || filterConstraint.value || 
+                       filterClinical.value || filterGeneType.value;
+    toggleFiltersBtn.classList.toggle('has-filters', hasFilters);
+}
+
+// Re-search when filters change
+[filterChromosome, filterConstraint, filterClinical, filterGeneType].forEach(el => {
+    el.addEventListener('change', () => {
+        updateFilterIndicator();
+        if (searchInput.value.trim()) {
+            performSearch(searchInput.value);
+        }
+    });
+});
+
 // Load species list on page load
 async function loadSpecies() {
     try {
@@ -35,6 +79,10 @@ async function performSearch(query) {
     if (!query.trim()) return;
     
     const species = speciesFilter.value;
+    const chromosome = filterChromosome.value;
+    const constraint = filterConstraint.value;
+    const clinical = filterClinical.value;
+    const geneType = filterGeneType.value;
     
     resultsSection.classList.remove('hidden');
     resultsList.innerHTML = '<div class="loading">Searching</div>';
@@ -42,9 +90,12 @@ async function performSearch(query) {
     
     try {
         let url = `/search?q=${encodeURIComponent(query)}`;
-        if (species) {
-            url += `&species=${species}`;
-        }
+        if (species) url += `&species=${species}`;
+        if (chromosome) url += `&chromosome=${chromosome}`;
+        if (constraint) url += `&constraint=${constraint}`;
+        if (clinical) url += `&clinical=${clinical}`;
+        if (geneType) url += `&gene_type=${geneType}`;
+        
         const response = await fetch(url);
         const data = await response.json();
         
