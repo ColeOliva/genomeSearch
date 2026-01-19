@@ -32,7 +32,17 @@ CREATE TABLE gene_traits (
     odds_ratio REAL,
     pubmed_id TEXT
 );
-CREATE TABLE gene_constraints (id INTEGER PRIMARY KEY, gene_id INTEGER, gene_symbol TEXT, pli REAL, loeuf REAL, gnomad_version TEXT);
+CREATE TABLE gene_constraints (
+    id INTEGER PRIMARY KEY,
+    gene_id INTEGER,
+    gene_symbol TEXT,
+    pli REAL,
+    loeuf REAL,
+    oe_lof REAL,
+    oe_mis REAL,
+    mis_z REAL,
+    gnomad_version TEXT
+);
 CREATE TABLE clinvar_variants (id INTEGER PRIMARY KEY, allele_id INTEGER, variation_id INTEGER, gene_id INTEGER, gene_symbol TEXT, variant_name TEXT, clinical_significance TEXT, phenotype_list TEXT, chromosome TEXT, start_pos INTEGER, rs_id INTEGER);
 CREATE TABLE clinvar_gene_summary (id INTEGER PRIMARY KEY, gene_id INTEGER, gene_symbol TEXT, pathogenic_alleles INTEGER);
 CREATE TABLE gene_summaries (id INTEGER PRIMARY KEY, gene_id INTEGER, summary TEXT, source TEXT);
@@ -61,8 +71,8 @@ cur.execute("INSERT INTO gene_traits (gene_id, gene_symbol, reported_trait, p_va
 cur.execute("INSERT INTO gene_traits (gene_id, gene_symbol, reported_trait, p_value, study_id, snp_id, risk_allele, odds_ratio, pubmed_id) VALUES (2, 'TP53', 'lung cancer', 2e-5, 'GCST0002', 'rs456', 'G', 1.5, '87654321')")
 
 # Constraints
-cur.execute("INSERT INTO gene_constraints (gene_id, gene_symbol, pli, loeuf, gnomad_version) VALUES (1, 'BRCA1', 0.95, 0.2, 'v4.1')")
-cur.execute("INSERT INTO gene_constraints (gene_id, gene_symbol, pli, loeuf, gnomad_version) VALUES (2, 'TP53', 0.99, 0.15, 'v4.1')")
+cur.execute("INSERT INTO gene_constraints (gene_id, gene_symbol, pli, loeuf, oe_lof, oe_mis, mis_z, gnomad_version) VALUES (1, 'BRCA1', 0.95, 0.2, 0.3, 0.4, 2.5, 'v4.1')")
+cur.execute("INSERT INTO gene_constraints (gene_id, gene_symbol, pli, loeuf, oe_lof, oe_mis, mis_z, gnomad_version) VALUES (2, 'TP53', 0.99, 0.15, 0.2, 0.5, 3.1, 'v4.1')")
 
 # ClinVar
 cur.execute("INSERT INTO clinvar_variants (allele_id, variation_id, gene_id, gene_symbol, variant_name, clinical_significance, phenotype_list, chromosome, start_pos, rs_id) VALUES (1001, 5001, 1, 'BRCA1', 'c.68_69del', 'Pathogenic', 'Breast cancer', '17', 43044295, 123456)")
