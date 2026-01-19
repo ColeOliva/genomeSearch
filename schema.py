@@ -105,6 +105,50 @@ def create_schema(conn):
         )
     ''')
     
+    # ClinVar gene-level summary (pathogenic variant counts per gene)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS clinvar_gene_summary (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            gene_id INTEGER,
+            gene_symbol TEXT NOT NULL,
+            total_submissions INTEGER DEFAULT 0,
+            total_alleles INTEGER DEFAULT 0,
+            pathogenic_alleles INTEGER DEFAULT 0,  -- Pathogenic + Likely pathogenic
+            uncertain_alleles INTEGER DEFAULT 0,   -- VUS
+            conflicting_alleles INTEGER DEFAULT 0,
+            gene_mim_number TEXT,
+            
+            FOREIGN KEY (gene_id) REFERENCES genes(gene_id)
+        )
+    ''')
+    
+    # ClinVar variant details (pathogenic/likely pathogenic only for space efficiency)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS clinvar_variants (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            allele_id INTEGER NOT NULL,
+            variation_id INTEGER,
+            gene_id INTEGER,
+            gene_symbol TEXT,
+            variant_name TEXT,
+            variant_type TEXT,
+            clinical_significance TEXT,
+            review_status TEXT,
+            phenotype_list TEXT,
+            chromosome TEXT,
+            start_pos INTEGER,
+            stop_pos INTEGER,
+            reference_allele TEXT,
+            alternate_allele TEXT,
+            rs_id INTEGER,          -- dbSNP rs number
+            last_evaluated TEXT,
+            origin TEXT,            -- germline, somatic, etc.
+            assembly TEXT,          -- GRCh37 or GRCh38
+            
+            FOREIGN KEY (gene_id) REFERENCES genes(gene_id)
+        )
+    ''')
+    
     # Indexes for performance
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_genes_symbol ON genes(symbol)')
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_genes_chromosome ON genes(chromosome)')
@@ -115,6 +159,16 @@ def create_schema(conn):
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_constraints_symbol ON gene_constraints(gene_symbol)')
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_constraints_pli ON gene_constraints(pli)')
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_constraints_loeuf ON gene_constraints(loeuf)')
+    
+    # ClinVar indexes
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_clinvar_summary_gene ON clinvar_gene_summary(gene_id)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_clinvar_summary_symbol ON clinvar_gene_summary(gene_symbol)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_clinvar_summary_pathogenic ON clinvar_gene_summary(pathogenic_alleles)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_clinvar_variants_gene ON clinvar_variants(gene_id)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_clinvar_variants_symbol ON clinvar_variants(gene_symbol)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_clinvar_variants_allele ON clinvar_variants(allele_id)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_clinvar_variants_chr ON clinvar_variants(chromosome)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_clinvar_variants_significance ON clinvar_variants(clinical_significance)')
     
     conn.commit()
     print("Database schema created successfully.")

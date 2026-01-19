@@ -73,12 +73,19 @@ function displayResults(results) {
             constraintBadge = '<span class="constraint-badge constrained" title="Low LOEUF (<0.35): Gene is constrained">⚠️ Constrained</span>';
         }
         
+        // ClinVar pathogenic badge
+        let clinvarBadge = '';
+        if (gene.clinvar_pathogenic && gene.clinvar_pathogenic > 0) {
+            clinvarBadge = `<span class="clinvar-badge" title="${gene.clinvar_pathogenic} pathogenic variants in ClinVar">⚕️ ${gene.clinvar_pathogenic} pathogenic</span>`;
+        }
+        
         return `
         <div class="gene-card" data-gene-id="${gene.gene_id}">
             <div class="gene-header">
                 <span class="gene-symbol">${escapeHtml(gene.symbol)}</span>
                 <span class="gene-name">${escapeHtml(gene.name || '')}</span>
                 ${constraintBadge}
+                ${clinvarBadge}
                 ${gene.trait_count > 0 ? `<span class="trait-badge" title="${gene.trait_count} GWAS associations">🧬 ${gene.trait_count}</span>` : ''}
             </div>
             <div class="gene-meta">
@@ -190,6 +197,72 @@ async function showGeneDetail(geneId) {
             `;
         }
         
+        // Build ClinVar section HTML
+        let clinvarHtml = '';
+        if (gene.clinvar_summary && gene.clinvar_summary.pathogenic_alleles > 0) {
+            const cv = gene.clinvar_summary;
+            clinvarHtml = `
+            <div class="detail-section clinvar-section">
+                <h3>⚕️ ClinVar Pathogenic Variants</h3>
+                <p class="clinvar-intro">Known disease-causing mutations reported in this gene</p>
+                <div class="clinvar-summary">
+                    <div class="clinvar-stat pathogenic">
+                        <div class="clinvar-stat-value">${cv.pathogenic_alleles.toLocaleString()}</div>
+                        <div class="clinvar-stat-label">Pathogenic</div>
+                    </div>
+                    ${cv.uncertain_alleles > 0 ? `
+                    <div class="clinvar-stat uncertain">
+                        <div class="clinvar-stat-value">${cv.uncertain_alleles.toLocaleString()}</div>
+                        <div class="clinvar-stat-label">Uncertain</div>
+                    </div>
+                    ` : ''}
+                    ${cv.conflicting_alleles > 0 ? `
+                    <div class="clinvar-stat conflicting">
+                        <div class="clinvar-stat-value">${cv.conflicting_alleles.toLocaleString()}</div>
+                        <div class="clinvar-stat-label">Conflicting</div>
+                    </div>
+                    ` : ''}
+                    <div class="clinvar-stat total">
+                        <div class="clinvar-stat-value">${cv.total_alleles.toLocaleString()}</div>
+                        <div class="clinvar-stat-label">Total Alleles</div>
+                    </div>
+                </div>
+                ${gene.clinvar_variants && gene.clinvar_variants.length > 0 ? `
+                <div class="clinvar-variants">
+                    <h4>Top Pathogenic Variants</h4>
+                    <table class="clinvar-table">
+                        <thead>
+                            <tr>
+                                <th>Variant</th>
+                                <th>Type</th>
+                                <th>Significance</th>
+                                <th>Condition</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${gene.clinvar_variants.slice(0, 10).map(v => `
+                                <tr>
+                                    <td>
+                                        <a href="https://www.ncbi.nlm.nih.gov/clinvar/variation/${v.allele_id}/" target="_blank" title="${escapeHtml(v.variant_name || '')}">
+                                            ${escapeHtml(truncateVariant(v.variant_name))}
+                                        </a>
+                                        ${v.rs_id ? `<span class="rs-tag">rs${v.rs_id}</span>` : ''}
+                                    </td>
+                                    <td><span class="variant-type">${escapeHtml(v.variant_type || '')}</span></td>
+                                    <td><span class="clinvar-sig ${v.clinical_significance?.toLowerCase().includes('pathogenic') ? 'sig-pathogenic' : ''}">${escapeHtml(truncate(v.clinical_significance, 30))}</span></td>
+                                    <td><span class="condition-text" title="${escapeHtml(v.phenotype_list || '')}">${escapeHtml(truncate(v.phenotype_list, 50)) || '-'}</span></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    ${gene.clinvar_variants.length > 10 ? `<p class="clinvar-more">Showing top 10 of ${gene.clinvar_variants.length} variants</p>` : ''}
+                </div>
+                ` : ''}
+                ${cv.gene_mim_number ? `<p class="clinvar-mim">OMIM Gene: <a href="https://www.omim.org/entry/${cv.gene_mim_number}" target="_blank">${cv.gene_mim_number}</a></p>` : ''}
+            </div>
+            `;
+        }
+        
         detailContent.innerHTML = `
             <div class="detail-symbol">${escapeHtml(gene.symbol)}</div>
             <div class="detail-name">${escapeHtml(gene.name || 'Unknown')}</div>
@@ -215,6 +288,8 @@ async function showGeneDetail(geneId) {
             ` : ''}
             
             ${constraintHtml}
+            
+            ${clinvarHtml}
             
             ${traitsHtml}
             
@@ -256,6 +331,9 @@ async function showGeneDetail(geneId) {
                 <a href="https://gnomad.broadinstitute.org/gene/${encodeURIComponent(gene.symbol)}?dataset=gnomad_r4" target="_blank">
                     🧬 gnomAD
                 </a>
+                <a href="https://www.ncbi.nlm.nih.gov/clinvar/?term=${encodeURIComponent(gene.symbol)}%5Bgene%5D" target="_blank">
+                    ⚕️ ClinVar
+                </a>
                 ` : ''}
             </div>
         `;
@@ -283,6 +361,18 @@ function escapeHtml(text) {
 function truncate(text, maxLength) {
     if (!text || text.length <= maxLength) return text;
     return text.substring(0, maxLength) + '...';
+}
+
+function truncateVariant(name) {
+    // Truncate variant names intelligently
+    if (!name) return '';
+    if (name.length <= 40) return name;
+    // Try to find a good break point (at parenthesis or colon)
+    const colonIdx = name.indexOf(':');
+    if (colonIdx > 10 && colonIdx < 35) {
+        return name.substring(0, colonIdx + 15) + '...';
+    }
+    return name.substring(0, 37) + '...';
 }
 
 function formatPValue(pval) {

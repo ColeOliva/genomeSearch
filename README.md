@@ -11,11 +11,12 @@ A searchable database of genes across multiple species with interactive chromoso
 
 - **Full-Text Search**: Search across 837,000+ genes using keywords, gene symbols, or biological terms
 - **GWAS Trait Associations**: Search by disease/trait names (e.g., "diabetes", "heart disease") with 1M+ gene-trait associations from the NHGRI-EBI GWAS Catalog
+- **ClinVar Pathogenic Variants**: Known disease-causing mutations with 700K+ pathogenic variants linked to conditions
 - **gnomAD Constraint Scores**: Population genetics data showing which genes are essential (pLI, LOEUF scores from 230K+ transcripts)
 - **Multi-Species Support**: 15 model organisms including Human, Mouse, Zebrafish, Fruit fly, and more
 - **Chromosome Viewer**: Interactive karyotype view with zoomable chromosome ideograms
 - **Gene Localization**: Visualize gene positions on chromosomes with cytogenetic band locations
-- **External Links**: Direct links to NCBI, GeneCards, UniProt, OMIM, GWAS Catalog, and gnomAD
+- **External Links**: Direct links to NCBI, GeneCards, UniProt, OMIM, GWAS Catalog, gnomAD, and ClinVar
 - **Fast Performance**: SQLite with FTS5 full-text search for instant results
 
 ## Screenshots
@@ -95,30 +96,42 @@ Interactive karyotype showing all chromosomes with gene markers. Click any chrom
    ```
    This downloads ~100MB of gene constraint metrics from gnomAD.
 
-7. **Build the database** (first time only)
+7. **Download ClinVar Data** (optional, for pathogenic variants)
+   ```bash
+   python download_clinvar.py
+   ```
+   This downloads ~400MB of clinical variant data from NCBI ClinVar.
+
+8. **Build the database** (first time only)
    ```bash
    python build_database.py
    ```
    This processes the NCBI data and creates the SQLite database (~500MB). Takes 10-20 minutes.
 
-8. **Import GWAS data** (optional, if downloaded)
+9. **Import GWAS data** (optional, if downloaded)
    ```bash
    python import_gwas.py
    ```
    This adds 1M+ gene-trait associations to the database.
 
-9. **Import gnomAD data** (optional, if downloaded)
-   ```bash
-   python import_gnomad.py
-   ```
-   This adds 230K+ gene constraint records with pLI and LOEUF scores.
+10. **Import gnomAD data** (optional, if downloaded)
+    ```bash
+    python import_gnomad.py
+    ```
+    This adds 230K+ gene constraint records with pLI and LOEUF scores.
 
-10. **Start the application**
+11. **Import ClinVar data** (optional, if downloaded)
+    ```bash
+    python import_clinvar.py
+    ```
+    This adds 700K+ pathogenic variant records with clinical significance.
+
+12. **Start the application**
     ```bash
     python app.py
     ```
 
-11. **Open in browser**
+13. **Open in browser**
     Navigate to http://localhost:5000
 
 ## Usage
@@ -146,9 +159,10 @@ Each gene shows:
 - Chromosome location and cytogenetic band
 - Description and gene type
 - **gnomAD constraint metrics** (pLI, LOEUF) showing mutation tolerance (human genes)
+- **ClinVar pathogenic variants** with clinical significance, conditions, and review status (human genes)
 - **GWAS trait/disease associations** with p-values, SNPs, and PubMed links (human genes)
 - Synonyms/aliases
-- Links to external databases (NCBI, GeneCards, UniProt, OMIM, GWAS Catalog, gnomAD)
+- Links to external databases (NCBI, GeneCards, UniProt, OMIM, GWAS Catalog, gnomAD, ClinVar)
 
 ## Project Structure
 
@@ -162,6 +176,8 @@ genomeSearch/
 ├── import_gwas.py         # GWAS data importer
 ├── download_gnomad.py     # gnomAD constraint data downloader
 ├── import_gnomad.py       # gnomAD data importer
+├── download_clinvar.py    # ClinVar variant data downloader
+├── import_clinvar.py      # ClinVar data importer
 ├── rebuild_fts.py         # FTS index rebuilder utility
 ├── requirements.txt       # Python dependencies
 ├── data/
@@ -220,6 +236,10 @@ Gene constraint data is from [gnomAD](https://gnomad.broadinstitute.org/) (Genom
 - `gnomad_v4_constraint.tsv`: Gene-level constraint metrics (pLI, LOEUF) from v4.1
 - `gnomad_v2_lof_metrics.txt`: Loss-of-function metrics from v2.1.1
 
+Clinical variant data is from [ClinVar](https://www.ncbi.nlm.nih.gov/clinvar/) (NCBI):
+- `variant_summary.txt`: Pathogenic/likely pathogenic variants with clinical significance
+- `gene_specific_summary.txt`: Gene-level summary of variant counts
+
 Data is processed for 15 model organisms based on NCBI taxonomy IDs.
 
 ## Technology Stack
@@ -231,12 +251,14 @@ Data is processed for 15 model organisms based on NCBI taxonomy IDs.
 
 ## Performance
 
-- Database size: ~500 MB
+- Database size: ~1.2 GB
 - 837,000+ genes indexed
 - 1.1M+ gene synonyms
 - 2.8M+ GO term associations
 - 1.08M+ GWAS trait associations (40,689 unique traits)
 - 231K+ gnomAD constraint records
+- 700K+ ClinVar pathogenic variants
+- 92K+ genes with ClinVar annotations
 - 3,063 genes identified as essential (pLI > 0.9)
 - 30,840 human genes linked to diseases/traits
 - Search response: <100ms typical
@@ -260,6 +282,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [NCBI Gene Database](https://www.ncbi.nlm.nih.gov/gene) for comprehensive gene annotation data
 - [NHGRI-EBI GWAS Catalog](https://www.ebi.ac.uk/gwas/) for gene-trait association data
 - [gnomAD](https://gnomad.broadinstitute.org/) (Genome Aggregation Database) for population genetics and constraint data
+- [ClinVar](https://www.ncbi.nlm.nih.gov/clinvar/) for clinical variant interpretations and pathogenicity data
 - [Gene Ontology Consortium](http://geneontology.org/) for functional annotations
 - Flask team for the excellent web framework
 

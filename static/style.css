@@ -528,6 +528,206 @@ main {
     opacity: 0.7;
 }
 
+/* ClinVar Badge in Search Results */
+.clinvar-badge {
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    margin-left: 0.5rem;
+    background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+    color: #9d174d;
+}
+
+/* ClinVar Section in Detail Panel */
+.clinvar-section {
+    background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.clinvar-intro {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+}
+
+.clinvar-summary {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.clinvar-stat {
+    background: white;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    text-align: center;
+    min-width: 80px;
+    border: 2px solid #e5e7eb;
+}
+
+.clinvar-stat.pathogenic {
+    border-color: #dc2626;
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+}
+
+.clinvar-stat.uncertain {
+    border-color: #f59e0b;
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+}
+
+.clinvar-stat.conflicting {
+    border-color: #8b5cf6;
+    background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+}
+
+.clinvar-stat.total {
+    border-color: #6b7280;
+    background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+}
+
+.clinvar-stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.clinvar-stat.pathogenic .clinvar-stat-value {
+    color: #dc2626;
+}
+
+.clinvar-stat.uncertain .clinvar-stat-value {
+    color: #d97706;
+}
+
+.clinvar-stat.conflicting .clinvar-stat-value {
+    color: #7c3aed;
+}
+
+.clinvar-stat-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+/* ClinVar Variants Table */
+.clinvar-variants {
+    margin-top: 1rem;
+}
+
+.clinvar-variants h4 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: var(--text);
+}
+
+.clinvar-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    font-size: 0.85rem;
+}
+
+.clinvar-table th {
+    background: #f1f5f9;
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--border);
+}
+
+.clinvar-table td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+}
+
+.clinvar-table tr:last-child td {
+    border-bottom: none;
+}
+
+.clinvar-table tr:hover td {
+    background: #f8fafc;
+}
+
+.clinvar-table a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.clinvar-table a:hover {
+    text-decoration: underline;
+}
+
+.rs-tag {
+    display: inline-block;
+    background: #e0f2fe;
+    color: #0369a1;
+    padding: 0.1rem 0.4rem;
+    border-radius: 3px;
+    font-size: 0.7rem;
+    font-family: monospace;
+    margin-left: 0.3rem;
+}
+
+.variant-type {
+    display: inline-block;
+    background: #f1f5f9;
+    color: var(--text-muted);
+    padding: 0.1rem 0.4rem;
+    border-radius: 3px;
+    font-size: 0.75rem;
+}
+
+.clinvar-sig {
+    font-size: 0.8rem;
+}
+
+.clinvar-sig.sig-pathogenic {
+    color: #dc2626;
+    font-weight: 600;
+}
+
+.condition-text {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.clinvar-more {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+    text-align: center;
+}
+
+.clinvar-mim {
+    font-size: 0.8rem;
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(0,0,0,0.1);
+}
+
+.clinvar-mim a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.clinvar-mim a:hover {
+    text-decoration: underline;
+}
+
 /* External Links */
 .external-links {
     margin-top: 2rem;

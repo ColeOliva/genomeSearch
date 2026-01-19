@@ -56,11 +56,13 @@ def search():
                        s.common_name as species_name,
                        snippet(gene_fts, 1, '<mark>', '</mark>', '...', 32) as matched_text,
                        (SELECT COUNT(*) FROM gene_traits gt WHERE gt.gene_id = g.gene_id) as trait_count,
-                       gc.pli, gc.loeuf
+                       gc.pli, gc.loeuf,
+                       cv.pathogenic_alleles as clinvar_pathogenic
                 FROM gene_fts
                 JOIN genes g ON gene_fts.gene_id = g.gene_id
                 JOIN species s ON g.tax_id = s.tax_id
                 LEFT JOIN gene_constraints gc ON g.gene_id = gc.gene_id
+                LEFT JOIN clinvar_gene_summary cv ON g.gene_id = cv.gene_id
                 WHERE gene_fts MATCH ? AND g.tax_id = ?
                 ORDER BY rank
                 LIMIT 100
@@ -72,11 +74,13 @@ def search():
                        s.common_name as species_name,
                        snippet(gene_fts, 1, '<mark>', '</mark>', '...', 32) as matched_text,
                        (SELECT COUNT(*) FROM gene_traits gt WHERE gt.gene_id = g.gene_id) as trait_count,
-                       gc.pli, gc.loeuf
+                       gc.pli, gc.loeuf,
+                       cv.pathogenic_alleles as clinvar_pathogenic
                 FROM gene_fts
                 JOIN genes g ON gene_fts.gene_id = g.gene_id
                 JOIN species s ON g.tax_id = s.tax_id
                 LEFT JOIN gene_constraints gc ON g.gene_id = gc.gene_id
+                LEFT JOIN clinvar_gene_summary cv ON g.gene_id = cv.gene_id
                 WHERE gene_fts MATCH ?
                 ORDER BY rank
                 LIMIT 100
@@ -164,6 +168,35 @@ def gene_detail(gene_id):
     constraint_row = cursor.fetchone()
     constraint = dict(constraint_row) if constraint_row else None
     
+    # Get ClinVar summary for this gene
+    cursor.execute('''
+        SELECT pathogenic_alleles, uncertain_alleles, conflicting_alleles, 
+               total_alleles, gene_mim_number
+        FROM clinvar_gene_summary
+        WHERE gene_id = ?
+    ''', (gene_id,))
+    clinvar_summary_row = cursor.fetchone()
+    clinvar_summary = dict(clinvar_summary_row) if clinvar_summary_row else None
+    
+    # Get top pathogenic variants from ClinVar
+    cursor.execute('''
+        SELECT allele_id, variant_name, variant_type, clinical_significance,
+               review_status, phenotype_list, chromosome, start_pos, rs_id
+        FROM clinvar_variants
+        WHERE gene_id = ?
+        ORDER BY 
+            CASE review_status
+                WHEN 'practice guideline' THEN 1
+                WHEN 'reviewed by expert panel' THEN 2
+                WHEN 'criteria provided, multiple submitters, no conflicts' THEN 3
+                WHEN 'criteria provided, single submitter' THEN 4
+                ELSE 5
+            END,
+            clinical_significance
+        LIMIT 20
+    ''', (gene_id,))
+    clinvar_variants = [dict(row) for row in cursor.fetchall()]
+    
     conn.close()
     
     result = dict(gene)
@@ -171,6 +204,8 @@ def gene_detail(gene_id):
     result['traits'] = traits
     result['trait_count'] = trait_count
     result['constraint'] = constraint
+    result['clinvar_summary'] = clinvar_summary
+    result['clinvar_variants'] = clinvar_variants
     return jsonify(result)
 
 
