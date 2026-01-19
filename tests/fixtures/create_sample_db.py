@@ -20,7 +20,18 @@ CREATE TABLE genes (gene_id INTEGER PRIMARY KEY, tax_id INTEGER, symbol TEXT, na
 CREATE TABLE gene_synonyms (id INTEGER PRIMARY KEY, gene_id INTEGER, synonym TEXT);
 CREATE VIRTUAL TABLE IF NOT EXISTS gene_fts USING fts5(gene_id UNINDEXED, searchable_text);
 
-CREATE TABLE gene_traits (id INTEGER PRIMARY KEY, gene_id INTEGER, gene_symbol TEXT, reported_trait TEXT, p_value REAL, study_id TEXT);
+CREATE TABLE gene_traits (
+    id INTEGER PRIMARY KEY,
+    gene_id INTEGER,
+    gene_symbol TEXT,
+    reported_trait TEXT,
+    p_value REAL,
+    study_id TEXT,
+    snp_id TEXT,
+    risk_allele TEXT,
+    odds_ratio REAL,
+    pubmed_id TEXT
+);
 CREATE TABLE gene_constraints (id INTEGER PRIMARY KEY, gene_id INTEGER, gene_symbol TEXT, pli REAL, loeuf REAL, gnomad_version TEXT);
 CREATE TABLE clinvar_variants (id INTEGER PRIMARY KEY, allele_id INTEGER, variation_id INTEGER, gene_id INTEGER, gene_symbol TEXT, variant_name TEXT, clinical_significance TEXT, phenotype_list TEXT, chromosome TEXT, start_pos INTEGER, rs_id INTEGER);
 CREATE TABLE clinvar_gene_summary (id INTEGER PRIMARY KEY, gene_id INTEGER, gene_symbol TEXT, pathogenic_alleles INTEGER);
@@ -46,8 +57,8 @@ cur.execute("INSERT INTO gene_synonyms (gene_id, synonym) VALUES (1, 'BRCC1')")
 cur.execute("INSERT INTO gene_synonyms (gene_id, synonym) VALUES (2, 'P53')")
 
 # Traits
-cur.execute("INSERT INTO gene_traits (gene_id, gene_symbol, reported_trait, p_value, study_id) VALUES (1, 'BRCA1', 'breast cancer', 1e-8, 'GCST0001')")
-cur.execute("INSERT INTO gene_traits (gene_id, gene_symbol, reported_trait, p_value, study_id) VALUES (2, 'TP53', 'lung cancer', 2e-5, 'GCST0002')")
+cur.execute("INSERT INTO gene_traits (gene_id, gene_symbol, reported_trait, p_value, study_id, snp_id, risk_allele, odds_ratio, pubmed_id) VALUES (1, 'BRCA1', 'breast cancer', 1e-8, 'GCST0001', 'rs123', 'A', 2.1, '12345678')")
+cur.execute("INSERT INTO gene_traits (gene_id, gene_symbol, reported_trait, p_value, study_id, snp_id, risk_allele, odds_ratio, pubmed_id) VALUES (2, 'TP53', 'lung cancer', 2e-5, 'GCST0002', 'rs456', 'G', 1.5, '87654321')")
 
 # Constraints
 cur.execute("INSERT INTO gene_constraints (gene_id, gene_symbol, pli, loeuf, gnomad_version) VALUES (1, 'BRCA1', 0.95, 0.2, 'v4.1')")
