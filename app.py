@@ -5,8 +5,8 @@ A searchable database of human genes with keyword search and chromosome visualiz
 
 import os
 import sqlite3
-import time
 import threading
+import time
 
 from flask import Flask, jsonify, render_template, request, send_from_directory
 
@@ -45,9 +45,71 @@ class SimpleExpiringCache:
         with self._lock:
             self._store.clear()
 
-# Default TTL used when caching responses
-DEFAULT_CACHE_TTL = 300  # seconds
-cache = SimpleExpiringCache(DEFAULT_CACHE_TTL)
+# Optional Redis-backed cache adapter (used when CACHE_BACKEND=redis and redis is available)
+class RedisCacheAdapter:
+    def __init__(self, url=None, prefix='gs:'):
+        self.prefix = prefix
+        try:
+            import redis
+            self._redis = redis.from_url(url) if url else redis.Redis()
+        except Exception:
+            self._redis = None
+
+    def _key(self, key):
+        return f"{self.prefix}{key}"
+
+    def set(self, key, value, timeout=None):
+        if not self._redis:
+            return
+        import json
+        data = json.dumps(value)
+        if timeout:
+            self._redis.setex(self._key(key), int(timeout), data)
+        else:
+            self._redis.set(self._key(key), data)
+
+    def get(self, key):
+        if not self._redis:
+            return None
+        import json
+        val = self._redis.get(self._key(key))
+        if not val:
+            return None
+        try:
+            return json.loads(val)
+        except Exception:
+            return None
+
+    def delete(self, key):
+        if not self._redis:
+            return
+        self._redis.delete(self._key(key))
+
+    def clear(self):
+        if not self._redis:
+            return
+        # Scan and delete keys with prefix
+        cursor = 0
+        while True:
+            cursor, keys = self._redis.scan(cursor=cursor, match=f"{self.prefix}*", count=1000)
+            if keys:
+                self._redis.delete(*keys)
+            if cursor == 0:
+                break
+
+# Pick cache backend (optional Redis via env)
+if os.environ.get('CACHE_BACKEND', '').lower() == 'redis':
+    REDIS_URL = os.environ.get('REDIS_URL')
+    redis_adapter = RedisCacheAdapter(REDIS_URL)
+    if redis_adapter._redis:
+        cache = redis_adapter
+    else:
+        # Fall back to in-process cache if redis not available
+        cache = SimpleExpiringCache(DEFAULT_CACHE_TTL)
+else:
+    # Default: in-process cache
+    DEFAULT_CACHE_TTL = 300  # seconds
+    cache = SimpleExpiringCache(DEFAULT_CACHE_TTL)
 
 def db_mtime():
     try:
@@ -417,6 +479,21 @@ def chromosome_region(chrom):
     
     conn = get_db()
     cursor = conn.cursor()
+
+
+@app.route('/_admin/clear_cache', methods=['POST'])
+def admin_clear_cache():
+    """Clear the application cache. If ADMIN_CLEAR_TOKEN is set, require the same token in the header 'X-Admin-Token' or form field 'token'."""
+    token = os.environ.get('ADMIN_CLEAR_TOKEN')
+    if token:
+        provided = request.headers.get('X-Admin-Token') or request.form.get('token')
+        if provided != token:
+            return jsonify({'error': 'Unauthorized'}), 401
+    try:
+        cache.clear()
+    except Exception:
+        pass
+    return jsonify({'status': 'ok'})
     
     if region:
         cursor.execute('''

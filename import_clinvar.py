@@ -429,6 +429,11 @@ def main():
         
     finally:
         conn.close()
+        # Touch DB to bump mtime so caches will observe the updated database
+        try:
+            os.utime(DATABASE, None)
+        except Exception:
+            pass
     
     print("\n" + "=" * 50)
     print("ClinVar import complete!")

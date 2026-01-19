@@ -292,6 +292,12 @@ def main():
     
     conn.close()
     
+    # Touch DB to update mtime so caches keyed by db_mtime change immediately
+    try:
+        os.utime(DATABASE, None)
+    except Exception:
+        pass
+
     print("=" * 60)
     print("Import complete!")
     print("=" * 60)

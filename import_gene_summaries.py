@@ -130,6 +130,11 @@ def main():
             
     finally:
         conn.close()
+        # Bump the database modification time so caches that rely on db_mtime() expire
+        try:
+            os.utime(DATABASE, None)
+        except Exception:
+            pass
 
 
 if __name__ == '__main__':

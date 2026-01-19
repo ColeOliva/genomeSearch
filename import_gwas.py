@@ -425,6 +425,12 @@ def main():
     
     conn.close()
     
+    # Bump database mtime so cache invalidation based on db_mtime() happens immediately
+    try:
+        os.utime(DATABASE, None)
+    except Exception:
+        pass
+
     print("=" * 60)
     print("Import complete!")
     print(f"  Total associations: {total_assoc:,}")
