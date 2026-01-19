@@ -24,6 +24,11 @@ jobs:
           pip install -r requirements.txt
           # Ensure test runner and coverage are available on CI
           pip install pytest pytest-cov
+      - name: Prepare lightweight test database (CI)
+        run: |
+          python tests/fixtures/create_sample_db.py
       - name: Run tests
+        env:
+          GENOME_DB: tests/fixtures/sample.db
         run: |
           python -m pytest -q

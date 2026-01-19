@@ -11,7 +11,8 @@ import time
 from flask import Flask, jsonify, render_template, request, send_from_directory
 
 app = Flask(__name__)
-DATABASE = os.path.join(os.path.dirname(__file__), 'data', 'genome.db')
+# Allow overriding the database path via environment for testing/CI
+DATABASE = os.environ.get('GENOME_DB', os.path.join(os.path.dirname(__file__), 'data', 'genome.db'))
 
 # Simple in-process expiring cache (keeps behavior similar to Flask-Caching SimpleCache)
 class SimpleExpiringCache:
