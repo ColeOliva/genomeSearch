@@ -2,4 +2,6 @@ flask==3.0.0
 requests==2.31.0
 # Optional Redis cache support - only used when CACHE_BACKEND=redis and redis is installed
 redis>=4.0.0
+pytest>=7.0
+pytest-cov>=4.0
 # Flask-Caching removed due to Flask 3 compatibility; using internal SimpleExpiringCache instead
