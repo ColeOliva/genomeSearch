@@ -62,6 +62,18 @@ def create_schema(conn):
         )
     ''')
     
+    # Gene functional summaries from NCBI RefSeq
+    # Detailed descriptions of gene function, protein products, and biological roles
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS gene_summaries (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            gene_id INTEGER NOT NULL UNIQUE,
+            summary TEXT NOT NULL,
+            source TEXT,  -- 'RefSeq', 'Alliance of Genome Resources', etc.
+            FOREIGN KEY (gene_id) REFERENCES genes(gene_id)
+        )
+    ''')
+    
     # FTS5 virtual table for full-text search
     # This indexes symbol, name, description, and synonyms together
     cursor.execute('''
@@ -155,6 +167,7 @@ def create_schema(conn):
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_genes_tax_id ON genes(tax_id)')
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_synonyms_gene ON gene_synonyms(gene_id)')
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_go_gene ON gene_go_terms(gene_id)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_summaries_gene ON gene_summaries(gene_id)')
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_constraints_gene ON gene_constraints(gene_id)')
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_constraints_symbol ON gene_constraints(gene_symbol)')
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_constraints_pli ON gene_constraints(pli)')

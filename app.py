@@ -40,6 +40,7 @@ def search():
     constraint = request.args.get('constraint', '').strip()
     clinical = request.args.get('clinical', '').strip()
     gene_type = request.args.get('gene_type', '').strip()
+    go_category = request.args.get('go_category', '').strip()
     
     if not query:
         return jsonify({'results': [], 'query': query})
@@ -64,18 +65,18 @@ def search():
         params.append(chromosome)
     
     if constraint == 'essential':
-        filters.append("gc.pli > 0.9")
+        filters.append("EXISTS (SELECT 1 FROM gene_constraints gc WHERE gc.gene_id = g.gene_id AND gc.pli > 0.9)")
     elif constraint == 'constrained':
-        filters.append("gc.loeuf < 0.35")
+        filters.append("EXISTS (SELECT 1 FROM gene_constraints gc WHERE gc.gene_id = g.gene_id AND gc.loeuf < 0.35)")
     elif constraint == 'tolerant':
-        filters.append("(gc.pli IS NULL OR gc.pli <= 0.5)")
+        filters.append("NOT EXISTS (SELECT 1 FROM gene_constraints gc WHERE gc.gene_id = g.gene_id AND gc.pli > 0.5)")
     
     if clinical == 'pathogenic':
-        filters.append("cv.pathogenic_alleles > 0")
+        filters.append("EXISTS (SELECT 1 FROM clinvar_gene_summary cv WHERE cv.gene_id = g.gene_id AND cv.pathogenic_alleles > 0)")
     elif clinical == 'gwas':
         filters.append("(SELECT COUNT(*) FROM gene_traits gt WHERE gt.gene_id = g.gene_id) > 0")
     elif clinical == 'disease':
-        filters.append("(cv.pathogenic_alleles > 0 OR (SELECT COUNT(*) FROM gene_traits gt WHERE gt.gene_id = g.gene_id) > 0)")
+        filters.append("(EXISTS (SELECT 1 FROM clinvar_gene_summary cv WHERE cv.gene_id = g.gene_id AND cv.pathogenic_alleles > 0) OR (SELECT COUNT(*) FROM gene_traits gt WHERE gt.gene_id = g.gene_id) > 0)")
     
     if gene_type == 'protein-coding':
         filters.append("g.gene_type = 'protein-coding'")
@@ -85,6 +86,15 @@ def search():
         filters.append("(g.gene_type LIKE '%RNA%' OR g.gene_type LIKE '%ncRNA%')")
     elif gene_type == 'other':
         filters.append("g.gene_type NOT IN ('protein-coding') AND g.gene_type NOT LIKE '%pseudo%' AND g.gene_type NOT LIKE '%RNA%'")
+    
+    if go_category == 'function':
+        filters.append("EXISTS (SELECT 1 FROM gene_go_terms ggo WHERE ggo.gene_id = g.gene_id AND ggo.category = 'Function')")
+    elif go_category == 'process':
+        filters.append("EXISTS (SELECT 1 FROM gene_go_terms ggo WHERE ggo.gene_id = g.gene_id AND ggo.category = 'Process')")
+    elif go_category == 'component':
+        filters.append("EXISTS (SELECT 1 FROM gene_go_terms ggo WHERE ggo.gene_id = g.gene_id AND ggo.category = 'Component')")
+    elif go_category == 'any':
+        filters.append("EXISTS (SELECT 1 FROM gene_go_terms ggo WHERE ggo.gene_id = g.gene_id)")
     
     where_clause = "gene_fts MATCH ?"
     if filters:
@@ -97,13 +107,12 @@ def search():
                    s.common_name as species_name,
                    snippet(gene_fts, 1, '<mark>', '</mark>', '...', 32) as matched_text,
                    (SELECT COUNT(*) FROM gene_traits gt WHERE gt.gene_id = g.gene_id) as trait_count,
-                   gc.pli, gc.loeuf,
-                   cv.pathogenic_alleles as clinvar_pathogenic
+                   (SELECT MAX(pli) FROM gene_constraints gc WHERE gc.gene_id = g.gene_id) as pli,
+                   (SELECT MIN(loeuf) FROM gene_constraints gc WHERE gc.gene_id = g.gene_id) as loeuf,
+                   (SELECT MAX(pathogenic_alleles) FROM clinvar_gene_summary cv WHERE cv.gene_id = g.gene_id) as clinvar_pathogenic
             FROM gene_fts
             JOIN genes g ON gene_fts.gene_id = g.gene_id
             JOIN species s ON g.tax_id = s.tax_id
-            LEFT JOIN gene_constraints gc ON g.gene_id = gc.gene_id
-            LEFT JOIN clinvar_gene_summary cv ON g.gene_id = cv.gene_id
             WHERE {where_clause}
             ORDER BY rank
             LIMIT 100
@@ -148,6 +157,14 @@ def gene_detail(gene_id):
     # Get synonyms
     cursor.execute('SELECT synonym FROM gene_synonyms WHERE gene_id = ?', (gene_id,))
     synonyms = [row['synonym'] for row in cursor.fetchall()]
+    
+    # Get functional summary from NCBI RefSeq
+    cursor.execute('SELECT summary, source FROM gene_summaries WHERE gene_id = ?', (gene_id,))
+    summary_row = cursor.fetchone()
+    functional_summary = {
+        'text': summary_row['summary'],
+        'source': summary_row['source']
+    } if summary_row else None
     
     # Get trait associations (GWAS data)
     cursor.execute('''
@@ -208,15 +225,40 @@ def gene_detail(gene_id):
     ''', (gene_id,))
     clinvar_variants = [dict(row) for row in cursor.fetchall()]
     
+    # Get Gene Ontology (GO) terms
+    cursor.execute('''
+        SELECT go_id, go_term, category
+        FROM gene_go_terms
+        WHERE gene_id = ?
+        ORDER BY category, go_term
+    ''', (gene_id,))
+    go_terms = [dict(row) for row in cursor.fetchall()]
+    
+    # Group GO terms by category
+    go_by_category = {
+        'Function': [],
+        'Process': [],
+        'Component': []
+    }
+    for term in go_terms:
+        cat = term['category']
+        if cat in go_by_category:
+            go_by_category[cat].append({
+                'go_id': term['go_id'],
+                'go_term': term['go_term']
+            })
+    
     conn.close()
     
     result = dict(gene)
     result['synonyms'] = synonyms
+    result['functional_summary'] = functional_summary
     result['traits'] = traits
     result['trait_count'] = trait_count
     result['constraint'] = constraint
     result['clinvar_summary'] = clinvar_summary
     result['clinvar_variants'] = clinvar_variants
+    result['go_terms'] = go_by_category
     return jsonify(result)
 
 

@@ -20,6 +20,7 @@ const filterChromosome = document.getElementById('filter-chromosome');
 const filterConstraint = document.getElementById('filter-constraint');
 const filterClinical = document.getElementById('filter-clinical');
 const filterGeneType = document.getElementById('filter-gene-type');
+const filterGoCategory = document.getElementById('filter-go-category');
 const clearFiltersBtn = document.getElementById('clear-filters');
 
 // Toggle filter panel
@@ -34,6 +35,7 @@ clearFiltersBtn.addEventListener('click', () => {
     filterConstraint.value = '';
     filterClinical.value = '';
     filterGeneType.value = '';
+    filterGoCategory.value = '';
     updateFilterIndicator();
     if (searchInput.value.trim()) {
         performSearch(searchInput.value);
@@ -43,12 +45,12 @@ clearFiltersBtn.addEventListener('click', () => {
 // Update filter indicator
 function updateFilterIndicator() {
     const hasFilters = filterChromosome.value || filterConstraint.value || 
-                       filterClinical.value || filterGeneType.value;
+                       filterClinical.value || filterGeneType.value || filterGoCategory.value;
     toggleFiltersBtn.classList.toggle('has-filters', hasFilters);
 }
 
 // Re-search when filters change
-[filterChromosome, filterConstraint, filterClinical, filterGeneType].forEach(el => {
+[filterChromosome, filterConstraint, filterClinical, filterGeneType, filterGoCategory].forEach(el => {
     el.addEventListener('change', () => {
         updateFilterIndicator();
         if (searchInput.value.trim()) {
@@ -83,6 +85,7 @@ async function performSearch(query) {
     const constraint = filterConstraint.value;
     const clinical = filterClinical.value;
     const geneType = filterGeneType.value;
+    const goCategory = filterGoCategory.value;
     
     resultsSection.classList.remove('hidden');
     resultsList.innerHTML = '<div class="loading">Searching</div>';
@@ -95,6 +98,7 @@ async function performSearch(query) {
         if (constraint) url += `&constraint=${constraint}`;
         if (clinical) url += `&clinical=${clinical}`;
         if (geneType) url += `&gene_type=${geneType}`;
+        if (goCategory) url += `&go_category=${goCategory}`;
         
         const response = await fetch(url);
         const data = await response.json();
@@ -314,9 +318,66 @@ async function showGeneDetail(geneId) {
             `;
         }
         
+        // Build Gene Ontology section HTML
+        let goHtml = '';
+        if (gene.go_terms) {
+            const hasFunction = gene.go_terms.Function && gene.go_terms.Function.length > 0;
+            const hasProcess = gene.go_terms.Process && gene.go_terms.Process.length > 0;
+            const hasComponent = gene.go_terms.Component && gene.go_terms.Component.length > 0;
+            
+            if (hasFunction || hasProcess || hasComponent) {
+                goHtml = `
+                <div class="detail-section go-section">
+                    <h3>🔬 Gene Ontology</h3>
+                    ${hasFunction ? `
+                    <div class="go-category">
+                        <h4>Molecular Function</h4>
+                        <div class="go-terms">
+                            ${gene.go_terms.Function.slice(0, 8).map(t => 
+                                `<a href="https://amigo.geneontology.org/amigo/term/${t.go_id}" target="_blank" class="go-tag go-function" title="${escapeHtml(t.go_id)}">${escapeHtml(t.go_term)}</a>`
+                            ).join('')}
+                            ${gene.go_terms.Function.length > 8 ? `<span class="go-more">+${gene.go_terms.Function.length - 8} more</span>` : ''}
+                        </div>
+                    </div>
+                    ` : ''}
+                    ${hasProcess ? `
+                    <div class="go-category">
+                        <h4>Biological Process</h4>
+                        <div class="go-terms">
+                            ${gene.go_terms.Process.slice(0, 8).map(t => 
+                                `<a href="https://amigo.geneontology.org/amigo/term/${t.go_id}" target="_blank" class="go-tag go-process" title="${escapeHtml(t.go_id)}">${escapeHtml(t.go_term)}</a>`
+                            ).join('')}
+                            ${gene.go_terms.Process.length > 8 ? `<span class="go-more">+${gene.go_terms.Process.length - 8} more</span>` : ''}
+                        </div>
+                    </div>
+                    ` : ''}
+                    ${hasComponent ? `
+                    <div class="go-category">
+                        <h4>Cellular Component</h4>
+                        <div class="go-terms">
+                            ${gene.go_terms.Component.slice(0, 8).map(t => 
+                                `<a href="https://amigo.geneontology.org/amigo/term/${t.go_id}" target="_blank" class="go-tag go-component" title="${escapeHtml(t.go_id)}">${escapeHtml(t.go_term)}</a>`
+                            ).join('')}
+                            ${gene.go_terms.Component.length > 8 ? `<span class="go-more">+${gene.go_terms.Component.length - 8} more</span>` : ''}
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+                `;
+            }
+        }
+        
         detailContent.innerHTML = `
             <div class="detail-symbol">${escapeHtml(gene.symbol)}</div>
             <div class="detail-name">${escapeHtml(gene.name || 'Unknown')}</div>
+            
+            ${gene.functional_summary ? `
+            <div class="detail-section functional-summary">
+                <h3>📖 Function</h3>
+                <p class="summary-text">${escapeHtml(gene.functional_summary.text)}</p>
+                <span class="summary-source">Source: ${escapeHtml(gene.functional_summary.source)}</span>
+            </div>
+            ` : ''}
             
             <div class="detail-section">
                 <h3>Species</h3>
@@ -341,6 +402,8 @@ async function showGeneDetail(geneId) {
             ${constraintHtml}
             
             ${clinvarHtml}
+            
+            ${goHtml}
             
             ${traitsHtml}
             

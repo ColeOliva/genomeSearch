@@ -13,7 +13,10 @@ A searchable database of genes across multiple species with interactive chromoso
 - **GWAS Trait Associations**: Search by disease/trait names (e.g., "diabetes", "heart disease") with 1M+ gene-trait associations from the NHGRI-EBI GWAS Catalog
 - **ClinVar Pathogenic Variants**: Known disease-causing mutations with 700K+ pathogenic variants linked to conditions
 - **gnomAD Constraint Scores**: Population genetics data showing which genes are essential (pLI, LOEUF scores from 230K+ transcripts)
+- **Gene Ontology (GO) Annotations**: 2.8M+ GO term associations with filtering by Molecular Function, Biological Process, or Cellular Component
+- **Functional Summaries**: 326K+ detailed gene function descriptions from NCBI RefSeq (e.g., "encodes a tumor suppressor protein")
 - **Multi-Species Support**: 15 model organisms including Human, Mouse, Zebrafish, Fruit fly, and more
+- **Advanced Filters**: Filter by species, chromosome, gene type, constraint status, clinical significance, and GO categories
 - **Chromosome Viewer**: Interactive karyotype view with zoomable chromosome ideograms
 - **Gene Localization**: Visualize gene positions on chromosomes with cytogenetic band locations
 - **External Links**: Direct links to NCBI, GeneCards, UniProt, OMIM, GWAS Catalog, gnomAD, and ClinVar
@@ -157,7 +160,9 @@ Each gene shows:
 - Symbol and full name
 - Species information
 - Chromosome location and cytogenetic band
+- **Functional summary** describing the gene's biological role (where available)
 - Description and gene type
+- **Gene Ontology terms** grouped by Function, Process, and Component
 - **gnomAD constraint metrics** (pLI, LOEUF) showing mutation tolerance (human genes)
 - **ClinVar pathogenic variants** with clinical significance, conditions, and review status (human genes)
 - **GWAS trait/disease associations** with p-values, SNPs, and PubMed links (human genes)
@@ -178,12 +183,14 @@ genomeSearch/
 ├── import_gnomad.py       # gnomAD data importer
 ├── download_clinvar.py    # ClinVar variant data downloader
 ├── import_clinvar.py      # ClinVar data importer
+├── import_gene_summaries.py # NCBI gene summary importer
 ├── rebuild_fts.py         # FTS index rebuilder utility
 ├── requirements.txt       # Python dependencies
 ├── data/
 │   ├── genome.db          # SQLite database (generated)
 │   ├── gene_info.txt      # NCBI gene info (downloaded)
 │   ├── gene2go.txt        # Gene Ontology data (downloaded)
+│   ├── gene_summary.gz    # NCBI gene summaries (downloaded)
 │   └── gwas_catalog.tsv   # GWAS Catalog data (downloaded)
 ├── static/
 │   ├── style.css          # Application styles
@@ -200,7 +207,7 @@ genomeSearch/
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/` | GET | Main search page |
-| `/search?q=<query>&species=<tax_id>` | GET | Search genes |
+| `/search?q=<query>&species=<tax_id>&go_category=<category>` | GET | Search genes with filters |
 | `/species` | GET | List all species |
 | `/gene/<gene_id>` | GET | Get gene details |
 | `/chromosomes?species=<tax_id>` | GET | List chromosomes for a species |
@@ -236,6 +243,9 @@ Gene constraint data is from [gnomAD](https://gnomad.broadinstitute.org/) (Genom
 - `gnomad_v4_constraint.tsv`: Gene-level constraint metrics (pLI, LOEUF) from v4.1
 - `gnomad_v2_lof_metrics.txt`: Loss-of-function metrics from v2.1.1
 
+Gene functional summaries are from [NCBI RefSeq](https://www.ncbi.nlm.nih.gov/refseq/):
+- `gene_summary.gz`: Detailed functional descriptions for 326K+ genes across all species
+
 Clinical variant data is from [ClinVar](https://www.ncbi.nlm.nih.gov/clinvar/) (NCBI):
 - `variant_summary.txt`: Pathogenic/likely pathogenic variants with clinical significance
 - `gene_specific_summary.txt`: Gene-level summary of variant counts
@@ -255,6 +265,7 @@ Data is processed for 15 model organisms based on NCBI taxonomy IDs.
 - 837,000+ genes indexed
 - 1.1M+ gene synonyms
 - 2.8M+ GO term associations
+- 326K+ gene functional summaries
 - 1.08M+ GWAS trait associations (40,689 unique traits)
 - 231K+ gnomAD constraint records
 - 700K+ ClinVar pathogenic variants
