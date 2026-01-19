@@ -4,6 +4,7 @@ Test suite for the Genome Search Flask application.
 
 import json
 import os
+import sqlite3
 import sys
 
 import pytest
@@ -20,6 +21,12 @@ def client():
     app.config['TESTING'] = True
     with app.test_client() as client:
         yield client
+
+
+@pytest.fixture
+def db_path():
+    """Return the database path for direct database queries."""
+    return DATABASE
 
 
 @pytest.fixture
@@ -177,6 +184,79 @@ class TestSearchEndpoint:
         for result in data['results']:
             assert result['tax_id'] == 9606
     
+    def test_search_with_chromosome_filter(self, client):
+        """Test search with chromosome filter."""
+        response = client.get('/search?q=gene&species=9606&chromosome=1')
+        data = json.loads(response.data)
+        assert response.status_code == 200
+        for result in data['results']:
+            assert result['chromosome'] == '1'
+    
+    def test_search_with_constraint_filter_essential(self, client):
+        """Test search with essential gene filter (pLI > 0.9)."""
+        response = client.get('/search?q=gene&species=9606&constraint=essential')
+        data = json.loads(response.data)
+        assert response.status_code == 200
+        # Results should have high pLI scores
+        for result in data['results']:
+            if result.get('pli') is not None:
+                assert result['pli'] > 0.9
+    
+    def test_search_with_constraint_filter_constrained(self, client):
+        """Test search with constrained gene filter (LOEUF < 0.35)."""
+        response = client.get('/search?q=gene&species=9606&constraint=constrained')
+        data = json.loads(response.data)
+        assert response.status_code == 200
+        for result in data['results']:
+            if result.get('loeuf') is not None:
+                assert result['loeuf'] < 0.35
+    
+    def test_search_with_clinical_filter_pathogenic(self, client):
+        """Test search with pathogenic variants filter."""
+        response = client.get('/search?q=gene&species=9606&clinical=pathogenic')
+        data = json.loads(response.data)
+        assert response.status_code == 200
+        for result in data['results']:
+            assert result.get('clinvar_pathogenic', 0) > 0
+    
+    def test_search_with_gene_type_filter(self, client):
+        """Test search with gene type filter."""
+        response = client.get('/search?q=gene&species=9606&gene_type=protein-coding')
+        data = json.loads(response.data)
+        assert response.status_code == 200
+        for result in data['results']:
+            assert result['gene_type'] == 'protein-coding'
+    
+    def test_search_multiple_filters(self, client):
+        """Test search with multiple filters combined."""
+        response = client.get('/search?q=cancer&species=9606&chromosome=17&clinical=pathogenic')
+        data = json.loads(response.data)
+        assert response.status_code == 200
+        for result in data['results']:
+            assert result['tax_id'] == 9606
+            assert result['chromosome'] == '17'
+            assert result.get('clinvar_pathogenic', 0) > 0
+    
+    def test_search_returns_constraint_data(self, client):
+        """Test that search results include gnomAD constraint data."""
+        response = client.get('/search?q=BRCA1&species=9606')
+        data = json.loads(response.data)
+        assert response.status_code == 200
+        # BRCA1 should have constraint data
+        if len(data['results']) > 0:
+            result = data['results'][0]
+            assert 'pli' in result
+            assert 'loeuf' in result
+    
+    def test_search_returns_clinvar_data(self, client):
+        """Test that search results include ClinVar pathogenic count."""
+        response = client.get('/search?q=BRCA1&species=9606')
+        data = json.loads(response.data)
+        assert response.status_code == 200
+        if len(data['results']) > 0:
+            result = data['results'][0]
+            assert 'clinvar_pathogenic' in result
+    
     def test_search_special_characters(self, client):
         """Test that search handles special characters safely."""
         response = client.get('/search?q=test"quote')
@@ -216,6 +296,90 @@ class TestGeneDetailEndpoint:
             response = client.get(f'/gene/{sample_gene_id}')
             data = json.loads(response.data)
             assert 'synonyms' in data
+    
+    def test_gene_detail_includes_traits(self, client, db_path):
+        """Test that gene detail includes GWAS trait associations."""
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT DISTINCT g.gene_id, g.tax_id 
+            FROM genes g 
+            JOIN gene_traits gt ON g.gene_id = gt.gene_id 
+            LIMIT 1
+        """)
+        row = cursor.fetchone()
+        conn.close()
+        
+        if row:
+            gene_id, tax_id = row
+            response = client.get(f'/gene/{gene_id}?species={tax_id}')
+            data = json.loads(response.data)
+            assert 'traits' in data
+            assert len(data['traits']) > 0
+    
+    def test_gene_detail_includes_constraint(self, client, db_path):
+        """Test that gene detail includes gnomAD constraint data."""
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT DISTINCT g.gene_id, g.tax_id 
+            FROM genes g 
+            JOIN gene_constraints gc ON g.symbol = gc.gene_symbol 
+            WHERE g.tax_id = 9606
+            LIMIT 1
+        """)
+        row = cursor.fetchone()
+        conn.close()
+        
+        if row:
+            gene_id, tax_id = row
+            response = client.get(f'/gene/{gene_id}?species={tax_id}')
+            data = json.loads(response.data)
+            assert 'constraint' in data
+            if data['constraint']:
+                assert 'pli' in data['constraint']
+                assert 'loeuf' in data['constraint']
+    
+    def test_gene_detail_includes_clinvar_summary(self, client, db_path):
+        """Test that gene detail includes ClinVar gene summary."""
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT DISTINCT g.gene_id, g.tax_id 
+            FROM genes g 
+            JOIN clinvar_gene_summary cgs ON g.gene_id = cgs.gene_id 
+            LIMIT 1
+        """)
+        row = cursor.fetchone()
+        conn.close()
+        
+        if row:
+            gene_id, tax_id = row
+            response = client.get(f'/gene/{gene_id}?species={tax_id}')
+            data = json.loads(response.data)
+            assert 'clinvar_summary' in data
+            if data['clinvar_summary']:
+                assert 'pathogenic_alleles' in data['clinvar_summary']
+    
+    def test_gene_detail_includes_clinvar_variants(self, client, db_path):
+        """Test that gene detail includes ClinVar pathogenic variants."""
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT DISTINCT g.gene_id, g.tax_id 
+            FROM genes g 
+            JOIN clinvar_variants cv ON g.gene_id = cv.gene_id 
+            LIMIT 1
+        """)
+        row = cursor.fetchone()
+        conn.close()
+        
+        if row:
+            gene_id, tax_id = row
+            response = client.get(f'/gene/{gene_id}?species={tax_id}')
+            data = json.loads(response.data)
+            assert 'clinvar_variants' in data
+            assert isinstance(data['clinvar_variants'], list)
 
 
 class TestChromosomesEndpoint:
