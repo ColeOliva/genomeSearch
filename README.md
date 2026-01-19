@@ -11,10 +11,11 @@ A searchable database of genes across multiple species with interactive chromoso
 
 - **Full-Text Search**: Search across 837,000+ genes using keywords, gene symbols, or biological terms
 - **GWAS Trait Associations**: Search by disease/trait names (e.g., "diabetes", "heart disease") with 1M+ gene-trait associations from the NHGRI-EBI GWAS Catalog
+- **gnomAD Constraint Scores**: Population genetics data showing which genes are essential (pLI, LOEUF scores from 230K+ transcripts)
 - **Multi-Species Support**: 15 model organisms including Human, Mouse, Zebrafish, Fruit fly, and more
 - **Chromosome Viewer**: Interactive karyotype view with zoomable chromosome ideograms
 - **Gene Localization**: Visualize gene positions on chromosomes with cytogenetic band locations
-- **External Links**: Direct links to NCBI, GeneCards, UniProt, OMIM, and GWAS Catalog
+- **External Links**: Direct links to NCBI, GeneCards, UniProt, OMIM, GWAS Catalog, and gnomAD
 - **Fast Performance**: SQLite with FTS5 full-text search for instant results
 
 ## Screenshots
@@ -88,25 +89,37 @@ Interactive karyotype showing all chromosomes with gene markers. Click any chrom
    ```
    This downloads ~60MB of gene-trait association data from EBI.
 
-6. **Build the database** (first time only)
+6. **Download gnomAD Constraint Data** (optional, for mutation tolerance)
+   ```bash
+   python download_gnomad.py
+   ```
+   This downloads ~100MB of gene constraint metrics from gnomAD.
+
+7. **Build the database** (first time only)
    ```bash
    python build_database.py
    ```
    This processes the NCBI data and creates the SQLite database (~500MB). Takes 10-20 minutes.
 
-7. **Import GWAS data** (optional, if downloaded)
+8. **Import GWAS data** (optional, if downloaded)
    ```bash
    python import_gwas.py
    ```
    This adds 1M+ gene-trait associations to the database.
 
-8. **Start the application**
+9. **Import gnomAD data** (optional, if downloaded)
    ```bash
-   python app.py
+   python import_gnomad.py
    ```
+   This adds 230K+ gene constraint records with pLI and LOEUF scores.
 
-9. **Open in browser**
-   Navigate to http://localhost:5000
+10. **Start the application**
+    ```bash
+    python app.py
+    ```
+
+11. **Open in browser**
+    Navigate to http://localhost:5000
 
 ## Usage
 
@@ -132,9 +145,10 @@ Each gene shows:
 - Species information
 - Chromosome location and cytogenetic band
 - Description and gene type
+- **gnomAD constraint metrics** (pLI, LOEUF) showing mutation tolerance (human genes)
 - **GWAS trait/disease associations** with p-values, SNPs, and PubMed links (human genes)
 - Synonyms/aliases
-- Links to external databases (NCBI, GeneCards, UniProt, OMIM, GWAS Catalog)
+- Links to external databases (NCBI, GeneCards, UniProt, OMIM, GWAS Catalog, gnomAD)
 
 ## Project Structure
 
@@ -146,6 +160,8 @@ genomeSearch/
 ├── download_data.py       # NCBI FTP downloader
 ├── download_gwas.py       # GWAS Catalog downloader
 ├── import_gwas.py         # GWAS data importer
+├── download_gnomad.py     # gnomAD constraint data downloader
+├── import_gnomad.py       # gnomAD data importer
 ├── rebuild_fts.py         # FTS index rebuilder utility
 ├── requirements.txt       # Python dependencies
 ├── data/
@@ -200,6 +216,10 @@ Gene data is sourced from the [NCBI Gene Database](https://www.ncbi.nlm.nih.gov/
 Trait associations are from the [NHGRI-EBI GWAS Catalog](https://www.ebi.ac.uk/gwas/):
 - `gwas_catalog.tsv`: 1M+ SNP-trait associations from genome-wide association studies
 
+Gene constraint data is from [gnomAD](https://gnomad.broadinstitute.org/) (Genome Aggregation Database):
+- `gnomad_v4_constraint.tsv`: Gene-level constraint metrics (pLI, LOEUF) from v4.1
+- `gnomad_v2_lof_metrics.txt`: Loss-of-function metrics from v2.1.1
+
 Data is processed for 15 model organisms based on NCBI taxonomy IDs.
 
 ## Technology Stack
@@ -216,6 +236,8 @@ Data is processed for 15 model organisms based on NCBI taxonomy IDs.
 - 1.1M+ gene synonyms
 - 2.8M+ GO term associations
 - 1.08M+ GWAS trait associations (40,689 unique traits)
+- 231K+ gnomAD constraint records
+- 3,063 genes identified as essential (pLI > 0.9)
 - 30,840 human genes linked to diseases/traits
 - Search response: <100ms typical
 
@@ -237,6 +259,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - [NCBI Gene Database](https://www.ncbi.nlm.nih.gov/gene) for comprehensive gene annotation data
 - [NHGRI-EBI GWAS Catalog](https://www.ebi.ac.uk/gwas/) for gene-trait association data
+- [gnomAD](https://gnomad.broadinstitute.org/) (Genome Aggregation Database) for population genetics and constraint data
 - [Gene Ontology Consortium](http://geneontology.org/) for functional annotations
 - Flask team for the excellent web framework
 

@@ -64,11 +64,21 @@ function displayResults(results) {
     
     resultCount.textContent = `${results.length} result${results.length !== 1 ? 's' : ''}`;
     
-    resultsList.innerHTML = results.map(gene => `
+    resultsList.innerHTML = results.map(gene => {
+        // Determine constraint status
+        let constraintBadge = '';
+        if (gene.pli !== null && gene.pli > 0.9) {
+            constraintBadge = '<span class="constraint-badge essential" title="High pLI (>0.9): Gene is likely essential">🔒 Essential</span>';
+        } else if (gene.loeuf !== null && gene.loeuf < 0.35) {
+            constraintBadge = '<span class="constraint-badge constrained" title="Low LOEUF (<0.35): Gene is constrained">⚠️ Constrained</span>';
+        }
+        
+        return `
         <div class="gene-card" data-gene-id="${gene.gene_id}">
             <div class="gene-header">
                 <span class="gene-symbol">${escapeHtml(gene.symbol)}</span>
                 <span class="gene-name">${escapeHtml(gene.name || '')}</span>
+                ${constraintBadge}
                 ${gene.trait_count > 0 ? `<span class="trait-badge" title="${gene.trait_count} GWAS associations">🧬 ${gene.trait_count}</span>` : ''}
             </div>
             <div class="gene-meta">
@@ -80,7 +90,8 @@ function displayResults(results) {
             ${gene.description ? `<p class="gene-description">${escapeHtml(truncate(gene.description, 200))}</p>` : ''}
             ${gene.matched_text ? `<p class="gene-description"><small>Match: ${gene.matched_text}</small></p>` : ''}
         </div>
-    `).join('');
+        `;
+    }).join('');
     
     // Add click handlers
     document.querySelectorAll('.gene-card').forEach(card => {
@@ -129,6 +140,56 @@ async function showGeneDetail(geneId) {
             `;
         }
         
+        // Build constraint section HTML (gnomAD)
+        let constraintHtml = '';
+        if (gene.constraint) {
+            const c = gene.constraint;
+            const pliClass = c.pli > 0.9 ? 'constraint-high' : (c.pli > 0.5 ? 'constraint-medium' : 'constraint-low');
+            const loeufClass = c.loeuf < 0.35 ? 'constraint-high' : (c.loeuf < 1.0 ? 'constraint-medium' : 'constraint-low');
+            
+            constraintHtml = `
+            <div class="detail-section constraint-section">
+                <h3>🧬 Mutation Tolerance (gnomAD)</h3>
+                <p class="constraint-intro">How tolerant is this gene to loss-of-function mutations?</p>
+                <div class="constraint-grid">
+                    ${c.pli !== null ? `
+                    <div class="constraint-metric ${pliClass}">
+                        <div class="constraint-label">pLI Score</div>
+                        <div class="constraint-value">${c.pli.toFixed(2)}</div>
+                        <div class="constraint-desc">${c.pli > 0.9 ? 'Likely essential gene' : (c.pli > 0.5 ? 'Moderately constrained' : 'Tolerant to LoF')}</div>
+                    </div>
+                    ` : ''}
+                    ${c.loeuf !== null ? `
+                    <div class="constraint-metric ${loeufClass}">
+                        <div class="constraint-label">LOEUF</div>
+                        <div class="constraint-value">${c.loeuf.toFixed(2)}</div>
+                        <div class="constraint-desc">${c.loeuf < 0.35 ? 'Strongly constrained' : (c.loeuf < 1.0 ? 'Moderately constrained' : 'Less constrained')}</div>
+                    </div>
+                    ` : ''}
+                    ${c.oe_lof !== null ? `
+                    <div class="constraint-metric">
+                        <div class="constraint-label">O/E (LoF)</div>
+                        <div class="constraint-value">${c.oe_lof.toFixed(3)}</div>
+                        <div class="constraint-desc">Observed / Expected LoF variants</div>
+                    </div>
+                    ` : ''}
+                    ${c.oe_mis !== null ? `
+                    <div class="constraint-metric">
+                        <div class="constraint-label">O/E (Missense)</div>
+                        <div class="constraint-value">${c.oe_mis.toFixed(3)}</div>
+                        <div class="constraint-desc">Observed / Expected missense</div>
+                    </div>
+                    ` : ''}
+                </div>
+                <p class="constraint-help">
+                    <strong>pLI &gt; 0.9</strong>: Gene is likely essential (mutations cause disease)<br>
+                    <strong>LOEUF &lt; 0.35</strong>: Gene is strongly constrained against loss-of-function variants<br>
+                    <small>Source: gnomAD ${c.gnomad_version}</small>
+                </p>
+            </div>
+            `;
+        }
+        
         detailContent.innerHTML = `
             <div class="detail-symbol">${escapeHtml(gene.symbol)}</div>
             <div class="detail-name">${escapeHtml(gene.name || 'Unknown')}</div>
@@ -152,6 +213,8 @@ async function showGeneDetail(geneId) {
                 <p>${escapeHtml(gene.description)}</p>
             </div>
             ` : ''}
+            
+            ${constraintHtml}
             
             ${traitsHtml}
             
@@ -189,6 +252,9 @@ async function showGeneDetail(geneId) {
                 </a>
                 <a href="https://www.ebi.ac.uk/gwas/genes/${encodeURIComponent(gene.symbol)}" target="_blank">
                     📊 GWAS Catalog
+                </a>
+                <a href="https://gnomad.broadinstitute.org/gene/${encodeURIComponent(gene.symbol)}?dataset=gnomad_r4" target="_blank">
+                    🧬 gnomAD
                 </a>
                 ` : ''}
             </div>

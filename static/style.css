@@ -418,6 +418,116 @@ main {
     font-style: italic;
 }
 
+/* Constraint Badge in Search Results */
+.constraint-badge {
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    margin-left: 0.5rem;
+}
+
+.constraint-badge.essential {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    color: #991b1b;
+}
+
+.constraint-badge.constrained {
+    background: linear-gradient(135deg, #fef9c3 0%, #fef08a 100%);
+    color: #854d0e;
+}
+
+/* Constraint Section in Detail Panel */
+.constraint-section {
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.constraint-intro {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+}
+
+.constraint-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.constraint-metric {
+    background: white;
+    border-radius: 8px;
+    padding: 0.75rem;
+    text-align: center;
+    border: 2px solid #e5e7eb;
+}
+
+.constraint-metric.constraint-high {
+    border-color: #ef4444;
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+}
+
+.constraint-metric.constraint-medium {
+    border-color: #f59e0b;
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+}
+
+.constraint-metric.constraint-low {
+    border-color: #10b981;
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+}
+
+.constraint-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.constraint-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0.25rem 0;
+}
+
+.constraint-metric.constraint-high .constraint-value {
+    color: #dc2626;
+}
+
+.constraint-metric.constraint-medium .constraint-value {
+    color: #d97706;
+}
+
+.constraint-metric.constraint-low .constraint-value {
+    color: #059669;
+}
+
+.constraint-desc {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+.constraint-help {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    background: white;
+    padding: 0.75rem;
+    border-radius: 6px;
+    line-height: 1.6;
+}
+
+.constraint-help small {
+    display: block;
+    margin-top: 0.5rem;
+    opacity: 0.7;
+}
+
 /* External Links */
 .external-links {
     margin-top: 2rem;

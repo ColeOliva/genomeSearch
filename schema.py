@@ -72,12 +72,49 @@ def create_schema(conn):
         )
     ''')
     
+    # gnomAD gene constraint metrics
+    # Tells us how tolerant/intolerant genes are to loss-of-function mutations
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS gene_constraints (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            gene_id INTEGER,
+            gene_symbol TEXT NOT NULL,
+            transcript TEXT,
+            
+            -- Loss-of-function constraint metrics
+            pli REAL,           -- Probability of LoF intolerance (>0.9 = essential)
+            loeuf REAL,         -- LoF Observed/Expected Upper Fraction (lower = more constrained)
+            loeuf_lower REAL,   -- 90% CI lower bound
+            loeuf_upper REAL,   -- 90% CI upper bound
+            oe_lof REAL,        -- Observed/Expected ratio for LoF variants
+            
+            -- Missense constraint metrics
+            oe_mis REAL,        -- Observed/Expected ratio for missense variants
+            oe_mis_lower REAL,
+            oe_mis_upper REAL,
+            mis_z REAL,         -- Z-score for missense constraint
+            
+            -- Synonymous (neutral) metrics for comparison
+            oe_syn REAL,        -- Observed/Expected ratio for synonymous variants
+            syn_z REAL,         -- Z-score for synonymous
+            
+            -- Metadata
+            gnomad_version TEXT,
+            
+            FOREIGN KEY (gene_id) REFERENCES genes(gene_id)
+        )
+    ''')
+    
     # Indexes for performance
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_genes_symbol ON genes(symbol)')
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_genes_chromosome ON genes(chromosome)')
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_genes_tax_id ON genes(tax_id)')
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_synonyms_gene ON gene_synonyms(gene_id)')
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_go_gene ON gene_go_terms(gene_id)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_constraints_gene ON gene_constraints(gene_id)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_constraints_symbol ON gene_constraints(gene_symbol)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_constraints_pli ON gene_constraints(pli)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_constraints_loeuf ON gene_constraints(loeuf)')
     
     conn.commit()
     print("Database schema created successfully.")

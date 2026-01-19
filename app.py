@@ -55,10 +55,12 @@ def search():
                        g.map_location, g.description, g.gene_type,
                        s.common_name as species_name,
                        snippet(gene_fts, 1, '<mark>', '</mark>', '...', 32) as matched_text,
-                       (SELECT COUNT(*) FROM gene_traits gt WHERE gt.gene_id = g.gene_id) as trait_count
+                       (SELECT COUNT(*) FROM gene_traits gt WHERE gt.gene_id = g.gene_id) as trait_count,
+                       gc.pli, gc.loeuf
                 FROM gene_fts
                 JOIN genes g ON gene_fts.gene_id = g.gene_id
                 JOIN species s ON g.tax_id = s.tax_id
+                LEFT JOIN gene_constraints gc ON g.gene_id = gc.gene_id
                 WHERE gene_fts MATCH ? AND g.tax_id = ?
                 ORDER BY rank
                 LIMIT 100
@@ -69,10 +71,12 @@ def search():
                        g.map_location, g.description, g.gene_type,
                        s.common_name as species_name,
                        snippet(gene_fts, 1, '<mark>', '</mark>', '...', 32) as matched_text,
-                       (SELECT COUNT(*) FROM gene_traits gt WHERE gt.gene_id = g.gene_id) as trait_count
+                       (SELECT COUNT(*) FROM gene_traits gt WHERE gt.gene_id = g.gene_id) as trait_count,
+                       gc.pli, gc.loeuf
                 FROM gene_fts
                 JOIN genes g ON gene_fts.gene_id = g.gene_id
                 JOIN species s ON g.tax_id = s.tax_id
+                LEFT JOIN gene_constraints gc ON g.gene_id = gc.gene_id
                 WHERE gene_fts MATCH ?
                 ORDER BY rank
                 LIMIT 100
@@ -144,12 +148,29 @@ def gene_detail(gene_id):
     cursor.execute('SELECT COUNT(*) as cnt FROM gene_traits WHERE gene_id = ?', (gene_id,))
     trait_count = cursor.fetchone()['cnt']
     
+    # Get constraint data (gnomAD)
+    cursor.execute('''
+        SELECT pli, loeuf, oe_lof, oe_mis, mis_z, gnomad_version
+        FROM gene_constraints
+        WHERE gene_id = ?
+        ORDER BY 
+            CASE gnomad_version 
+                WHEN 'v4.1' THEN 1 
+                WHEN 'v2.1.1' THEN 2 
+                ELSE 3 
+            END
+        LIMIT 1
+    ''', (gene_id,))
+    constraint_row = cursor.fetchone()
+    constraint = dict(constraint_row) if constraint_row else None
+    
     conn.close()
     
     result = dict(gene)
     result['synonyms'] = synonyms
     result['traits'] = traits
     result['trait_count'] = trait_count
+    result['constraint'] = constraint
     return jsonify(result)
 
 
