@@ -69,12 +69,13 @@ function displayResults(results) {
             <div class="gene-header">
                 <span class="gene-symbol">${escapeHtml(gene.symbol)}</span>
                 <span class="gene-name">${escapeHtml(gene.name || '')}</span>
+                ${gene.trait_count > 0 ? `<span class="trait-badge" title="${gene.trait_count} GWAS associations">🧬 ${gene.trait_count}</span>` : ''}
             </div>
             <div class="gene-meta">
                 ${gene.species_name ? `<span class="species-badge">${escapeHtml(gene.species_name)}</span>` : ''}
                 ${gene.chromosome ? `<span class="chromosome-badge">Chr ${escapeHtml(gene.chromosome)}</span>` : ''}
                 ${gene.map_location ? `<span>📍 ${escapeHtml(gene.map_location)}</span>` : ''}
-                ${gene.gene_type ? `<span>🏷️ ${escapeHtml(gene.gene_type)}</span>` : ''}
+                ${gene.gene_type && gene.gene_type !== 'unknown' ? `<span>🏷️ ${escapeHtml(gene.gene_type)}</span>` : ''}
             </div>
             ${gene.description ? `<p class="gene-description">${escapeHtml(truncate(gene.description, 200))}</p>` : ''}
             ${gene.matched_text ? `<p class="gene-description"><small>Match: ${gene.matched_text}</small></p>` : ''}
@@ -103,6 +104,31 @@ async function showGeneDetail(geneId) {
             return;
         }
         
+        // Build traits section HTML
+        let traitsHtml = '';
+        if (gene.traits && gene.traits.length > 0) {
+            traitsHtml = `
+            <div class="detail-section traits-section">
+                <h3>🧬 Associated Traits/Diseases</h3>
+                <p class="traits-intro">${gene.trait_count} association${gene.trait_count > 1 ? 's' : ''} from GWAS studies</p>
+                <div class="traits-list">
+                    ${gene.traits.map(t => `
+                        <div class="trait-item">
+                            <div class="trait-name">${escapeHtml(t.reported_trait)}</div>
+                            <div class="trait-details">
+                                ${t.snp_id ? `<span class="trait-snp">${escapeHtml(t.snp_id)}</span>` : ''}
+                                ${t.p_value ? `<span class="trait-pvalue">p=${formatPValue(t.p_value)}</span>` : ''}
+                                ${t.odds_ratio ? `<span class="trait-or">OR: ${t.odds_ratio.toFixed(2)}</span>` : ''}
+                                ${t.pubmed_id ? `<a href="https://pubmed.ncbi.nlm.nih.gov/${t.pubmed_id}" target="_blank" class="trait-pubmed">📄 PubMed</a>` : ''}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                ${gene.trait_count > 20 ? `<p class="traits-more">Showing top 20 of ${gene.trait_count} associations (sorted by p-value)</p>` : ''}
+            </div>
+            `;
+        }
+        
         detailContent.innerHTML = `
             <div class="detail-symbol">${escapeHtml(gene.symbol)}</div>
             <div class="detail-name">${escapeHtml(gene.name || 'Unknown')}</div>
@@ -127,10 +153,14 @@ async function showGeneDetail(geneId) {
             </div>
             ` : ''}
             
+            ${traitsHtml}
+            
+            ${gene.gene_type && gene.gene_type !== 'unknown' ? `
             <div class="detail-section">
                 <h3>Gene Type</h3>
-                <p>${escapeHtml(gene.gene_type || 'Unknown')}</p>
+                <p>${escapeHtml(gene.gene_type)}</p>
             </div>
+            ` : ''}
             
             ${gene.synonyms && gene.synonyms.length > 0 ? `
             <div class="detail-section">
@@ -156,6 +186,9 @@ async function showGeneDetail(geneId) {
                 ${gene.tax_id === 9606 ? `
                 <a href="https://www.omim.org/search?search=${encodeURIComponent(gene.symbol)}" target="_blank">
                     🏥 OMIM (Disease Associations)
+                </a>
+                <a href="https://www.ebi.ac.uk/gwas/genes/${encodeURIComponent(gene.symbol)}" target="_blank">
+                    📊 GWAS Catalog
                 </a>
                 ` : ''}
             </div>
@@ -184,6 +217,14 @@ function escapeHtml(text) {
 function truncate(text, maxLength) {
     if (!text || text.length <= maxLength) return text;
     return text.substring(0, maxLength) + '...';
+}
+
+function formatPValue(pval) {
+    if (!pval) return '';
+    if (pval < 0.0001) {
+        return pval.toExponential(1);
+    }
+    return pval.toFixed(4);
 }
 
 // Event listeners

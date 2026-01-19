@@ -211,6 +211,16 @@ main {
     font-size: 0.85rem;
 }
 
+.trait-badge {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    color: #92400e;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-left: auto;
+}
+
 .gene-description {
     color: var(--text-muted);
     font-size: 0.95rem;
@@ -319,6 +329,93 @@ main {
     border-radius: 4px;
     font-size: 0.9rem;
     color: var(--text-muted);
+}
+
+/* Traits/Disease Association Section */
+.traits-section {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+}
+
+.traits-section h3 {
+    color: #92400e;
+    margin-bottom: 0.5rem;
+}
+
+.traits-intro {
+    font-size: 0.85rem;
+    color: #a16207;
+    margin-bottom: 0.75rem;
+}
+
+.traits-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.trait-item {
+    background: white;
+    padding: 0.75rem;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    border-left: 3px solid #f59e0b;
+}
+
+.trait-name {
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+}
+
+.trait-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+}
+
+.trait-snp {
+    background: #dbeafe;
+    color: #1e40af;
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+.trait-pvalue {
+    background: #dcfce7;
+    color: #166534;
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+}
+
+.trait-or {
+    background: #fce7f3;
+    color: #9d174d;
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+}
+
+.trait-pubmed {
+    background: #e0e7ff;
+    color: #3730a3;
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+.trait-pubmed:hover {
+    background: #c7d2fe;
+}
+
+.traits-more {
+    font-size: 0.8rem;
+    color: #a16207;
+    text-align: center;
+    margin-top: 0.5rem;
+    font-style: italic;
 }
 
 /* External Links */

@@ -10,10 +10,11 @@ A searchable database of genes across multiple species with interactive chromoso
 ## Features
 
 - **Full-Text Search**: Search across 837,000+ genes using keywords, gene symbols, or biological terms
+- **GWAS Trait Associations**: Search by disease/trait names (e.g., "diabetes", "heart disease") with 1M+ gene-trait associations from the NHGRI-EBI GWAS Catalog
 - **Multi-Species Support**: 15 model organisms including Human, Mouse, Zebrafish, Fruit fly, and more
 - **Chromosome Viewer**: Interactive karyotype view with zoomable chromosome ideograms
 - **Gene Localization**: Visualize gene positions on chromosomes with cytogenetic band locations
-- **External Links**: Direct links to NCBI, GeneCards, UniProt, and OMIM databases
+- **External Links**: Direct links to NCBI, GeneCards, UniProt, OMIM, and GWAS Catalog
 - **Fast Performance**: SQLite with FTS5 full-text search for instant results
 
 ## Screenshots
@@ -81,18 +82,30 @@ Interactive karyotype showing all chromosomes with gene markers. Click any chrom
    ```
    This downloads ~3GB of gene annotation data from NCBI FTP.
 
-5. **Build the database** (first time only)
+5. **Download GWAS Catalog** (optional, for trait associations)
+   ```bash
+   python download_gwas.py
+   ```
+   This downloads ~60MB of gene-trait association data from EBI.
+
+6. **Build the database** (first time only)
    ```bash
    python build_database.py
    ```
    This processes the NCBI data and creates the SQLite database (~500MB). Takes 10-20 minutes.
 
-6. **Start the application**
+7. **Import GWAS data** (optional, if downloaded)
+   ```bash
+   python import_gwas.py
+   ```
+   This adds 1M+ gene-trait associations to the database.
+
+8. **Start the application**
    ```bash
    python app.py
    ```
 
-7. **Open in browser**
+9. **Open in browser**
    Navigate to http://localhost:5000
 
 ## Usage
@@ -119,8 +132,9 @@ Each gene shows:
 - Species information
 - Chromosome location and cytogenetic band
 - Description and gene type
+- **GWAS trait/disease associations** with p-values, SNPs, and PubMed links (human genes)
 - Synonyms/aliases
-- Links to external databases (NCBI, GeneCards, UniProt, OMIM)
+- Links to external databases (NCBI, GeneCards, UniProt, OMIM, GWAS Catalog)
 
 ## Project Structure
 
@@ -130,12 +144,15 @@ genomeSearch/
 ├── schema.py              # Database schema definition
 ├── build_database.py      # NCBI data parser and database builder
 ├── download_data.py       # NCBI FTP downloader
+├── download_gwas.py       # GWAS Catalog downloader
+├── import_gwas.py         # GWAS data importer
 ├── rebuild_fts.py         # FTS index rebuilder utility
 ├── requirements.txt       # Python dependencies
 ├── data/
 │   ├── genome.db          # SQLite database (generated)
 │   ├── gene_info.txt      # NCBI gene info (downloaded)
-│   └── gene2go.txt        # Gene Ontology data (downloaded)
+│   ├── gene2go.txt        # Gene Ontology data (downloaded)
+│   └── gwas_catalog.tsv   # GWAS Catalog data (downloaded)
 ├── static/
 │   ├── style.css          # Application styles
 │   └── app.js             # Frontend JavaScript
@@ -180,6 +197,9 @@ Gene data is sourced from the [NCBI Gene Database](https://www.ncbi.nlm.nih.gov/
 - `gene_info.gz`: Gene symbols, names, descriptions, chromosomes, and types
 - `gene2go.gz`: Gene Ontology term associations
 
+Trait associations are from the [NHGRI-EBI GWAS Catalog](https://www.ebi.ac.uk/gwas/):
+- `gwas_catalog.tsv`: 1M+ SNP-trait associations from genome-wide association studies
+
 Data is processed for 15 model organisms based on NCBI taxonomy IDs.
 
 ## Technology Stack
@@ -195,6 +215,8 @@ Data is processed for 15 model organisms based on NCBI taxonomy IDs.
 - 837,000+ genes indexed
 - 1.1M+ gene synonyms
 - 2.8M+ GO term associations
+- 1.08M+ GWAS trait associations (40,689 unique traits)
+- 30,840 human genes linked to diseases/traits
 - Search response: <100ms typical
 
 ## Contributing
@@ -214,6 +236,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Acknowledgments
 
 - [NCBI Gene Database](https://www.ncbi.nlm.nih.gov/gene) for comprehensive gene annotation data
+- [NHGRI-EBI GWAS Catalog](https://www.ebi.ac.uk/gwas/) for gene-trait association data
 - [Gene Ontology Consortium](http://geneontology.org/) for functional annotations
 - Flask team for the excellent web framework
 

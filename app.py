@@ -54,7 +54,8 @@ def search():
                 SELECT g.gene_id, g.tax_id, g.symbol, g.name, g.chromosome, 
                        g.map_location, g.description, g.gene_type,
                        s.common_name as species_name,
-                       snippet(gene_fts, 1, '<mark>', '</mark>', '...', 32) as matched_text
+                       snippet(gene_fts, 1, '<mark>', '</mark>', '...', 32) as matched_text,
+                       (SELECT COUNT(*) FROM gene_traits gt WHERE gt.gene_id = g.gene_id) as trait_count
                 FROM gene_fts
                 JOIN genes g ON gene_fts.gene_id = g.gene_id
                 JOIN species s ON g.tax_id = s.tax_id
@@ -67,7 +68,8 @@ def search():
                 SELECT g.gene_id, g.tax_id, g.symbol, g.name, g.chromosome, 
                        g.map_location, g.description, g.gene_type,
                        s.common_name as species_name,
-                       snippet(gene_fts, 1, '<mark>', '</mark>', '...', 32) as matched_text
+                       snippet(gene_fts, 1, '<mark>', '</mark>', '...', 32) as matched_text,
+                       (SELECT COUNT(*) FROM gene_traits gt WHERE gt.gene_id = g.gene_id) as trait_count
                 FROM gene_fts
                 JOIN genes g ON gene_fts.gene_id = g.gene_id
                 JOIN species s ON g.tax_id = s.tax_id
@@ -128,10 +130,26 @@ def gene_detail(gene_id):
     cursor.execute('SELECT synonym FROM gene_synonyms WHERE gene_id = ?', (gene_id,))
     synonyms = [row['synonym'] for row in cursor.fetchall()]
     
+    # Get trait associations (GWAS data)
+    cursor.execute('''
+        SELECT reported_trait, p_value, snp_id, risk_allele, odds_ratio, pubmed_id
+        FROM gene_traits
+        WHERE gene_id = ?
+        ORDER BY p_value ASC
+        LIMIT 20
+    ''', (gene_id,))
+    traits = [dict(row) for row in cursor.fetchall()]
+    
+    # Get count of total traits for this gene
+    cursor.execute('SELECT COUNT(*) as cnt FROM gene_traits WHERE gene_id = ?', (gene_id,))
+    trait_count = cursor.fetchone()['cnt']
+    
     conn.close()
     
     result = dict(gene)
     result['synonyms'] = synonyms
+    result['traits'] = traits
+    result['trait_count'] = trait_count
     return jsonify(result)
 
 

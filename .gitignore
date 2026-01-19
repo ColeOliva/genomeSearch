@@ -9,6 +9,8 @@ venv/
 data/*.gz
 data/*.db
 data/*.txt
+data/*.tsv
+data/*.zip
 
 # Testing
 .pytest_cache/
