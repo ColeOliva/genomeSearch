@@ -5,11 +5,55 @@ A searchable database of human genes with keyword search and chromosome visualiz
 
 import os
 import sqlite3
+import time
+import threading
 
 from flask import Flask, jsonify, render_template, request, send_from_directory
 
 app = Flask(__name__)
 DATABASE = os.path.join(os.path.dirname(__file__), 'data', 'genome.db')
+
+# Simple in-process expiring cache (keeps behavior similar to Flask-Caching SimpleCache)
+class SimpleExpiringCache:
+    def __init__(self, default_timeout=300):
+        self._store = {}
+        self._lock = threading.Lock()
+        self.default_timeout = default_timeout
+
+    def set(self, key, value, timeout=None):
+        expire = time.time() + (timeout if timeout is not None else self.default_timeout)
+        with self._lock:
+            self._store[key] = (value, expire)
+
+    def get(self, key):
+        with self._lock:
+            item = self._store.get(key)
+            if not item:
+                return None
+            value, expire = item
+            if time.time() > expire:
+                del self._store[key]
+                return None
+            return value
+
+    def delete(self, key):
+        with self._lock:
+            if key in self._store:
+                del self._store[key]
+
+    def clear(self):
+        with self._lock:
+            self._store.clear()
+
+# Default TTL used when caching responses
+DEFAULT_CACHE_TTL = 300  # seconds
+cache = SimpleExpiringCache(DEFAULT_CACHE_TTL)
+
+def db_mtime():
+    try:
+        return int(os.path.getmtime(DATABASE))
+    except Exception:
+        return 0
 
 
 @app.route('/favicon.ico')
@@ -100,26 +144,51 @@ def search():
     if filters:
         where_clause += " AND " + " AND ".join(filters)
     
+    # Pagination parameters (parse early so we can include in cache key)
+    page = int(request.args.get('page', 1))
+    per_page = int(request.args.get('per_page', 50))
+    if per_page <= 0:
+        per_page = 50
+    per_page = min(per_page, 100)
+    page = max(page, 1)
+    offset = (page - 1) * per_page
+
+    # Build cache key including DB mtime and all filter params to avoid stale/incorrect hits
+    cache_key = f"search:{db_mtime()}:{query}:{species}:{chromosome}:{constraint}:{clinical}:{gene_type}:{go_category}:{page}:{per_page}"
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return jsonify(cached)
+
     try:
+
+        # Count total matching rows (gene_fts rows join genes)
+        count_params = list(params)
+        count_sql = f'''SELECT COUNT(*) as total FROM gene_fts JOIN genes g ON gene_fts.gene_id = g.gene_id WHERE {where_clause}'''
+        cursor.execute(count_sql, count_params)
+        row = cursor.fetchone()
+        total = row[0] if row else 0
+
+        # Main query with LIMIT/OFFSET
+        params_main = list(params) + [per_page, offset]
         cursor.execute(f'''
             SELECT g.gene_id, g.tax_id, g.symbol, g.name, g.chromosome, 
                    g.map_location, g.description, g.gene_type,
                    s.common_name as species_name,
                    snippet(gene_fts, 1, '<mark>', '</mark>', '...', 32) as matched_text,
                    (SELECT COUNT(*) FROM gene_traits gt WHERE gt.gene_id = g.gene_id) as trait_count,
-                                     (SELECT MAX(pli) FROM gene_constraints gc WHERE gc.gene_id = g.gene_id) as pli,
-                                     (SELECT MIN(loeuf) FROM gene_constraints gc WHERE gc.gene_id = g.gene_id) as loeuf,
-                                     (EXISTS (SELECT 1 FROM gene_summaries gs WHERE gs.gene_id = g.gene_id)) as has_summary,
-                                     (EXISTS (SELECT 1 FROM gene_traits gt WHERE gt.gene_id = g.gene_id)) as has_gwas,
-                                     (SELECT MAX(pathogenic_alleles) FROM clinvar_gene_summary cv WHERE cv.gene_id = g.gene_id) as clinvar_pathogenic
+                   (SELECT MAX(pli) FROM gene_constraints gc WHERE gc.gene_id = g.gene_id) as pli,
+                   (SELECT MIN(loeuf) FROM gene_constraints gc WHERE gc.gene_id = g.gene_id) as loeuf,
+                   (EXISTS (SELECT 1 FROM gene_summaries gs WHERE gs.gene_id = g.gene_id)) as has_summary,
+                   (EXISTS (SELECT 1 FROM gene_traits gt WHERE gt.gene_id = g.gene_id)) as has_gwas,
+                   (SELECT MAX(pathogenic_alleles) FROM clinvar_gene_summary cv WHERE cv.gene_id = g.gene_id) as clinvar_pathogenic
             FROM gene_fts
             JOIN genes g ON gene_fts.gene_id = g.gene_id
             JOIN species s ON g.tax_id = s.tax_id
             WHERE {where_clause}
             ORDER BY rank
-            LIMIT 100
-        ''', params)
-        
+            LIMIT ? OFFSET ?
+        ''', params_main)
+
         results = [dict(row) for row in cursor.fetchall()]
     except sqlite3.OperationalError:
         # Fallback to simple LIKE search if FTS fails
@@ -135,8 +204,15 @@ def search():
         results = [dict(row) for row in cursor.fetchall()]
     
     conn.close()
-    
-    return jsonify({'results': results, 'query': query})
+
+    payload = {'results': results, 'query': query, 'page': page, 'per_page': per_page, 'total': total}
+    try:
+        cache.set(cache_key, payload, timeout=app.config.get('CACHE_DEFAULT_TIMEOUT', 300))
+    except Exception:
+        # If cache fails for any reason, continue silently
+        pass
+
+    return jsonify(payload)
 
 
 @app.route('/gene/<int:gene_id>')
