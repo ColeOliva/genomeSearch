@@ -24,6 +24,7 @@ CREATE TABLE gene_traits (id INTEGER PRIMARY KEY, gene_id INTEGER, gene_symbol T
 CREATE TABLE gene_constraints (id INTEGER PRIMARY KEY, gene_id INTEGER, gene_symbol TEXT, pli REAL, loeuf REAL, gnomad_version TEXT);
 CREATE TABLE clinvar_variants (id INTEGER PRIMARY KEY, allele_id INTEGER, variation_id INTEGER, gene_id INTEGER, gene_symbol TEXT, variant_name TEXT, clinical_significance TEXT, phenotype_list TEXT, chromosome TEXT, start_pos INTEGER, rs_id INTEGER);
 CREATE TABLE clinvar_gene_summary (id INTEGER PRIMARY KEY, gene_id INTEGER, gene_symbol TEXT, pathogenic_alleles INTEGER);
+CREATE TABLE gene_summaries (id INTEGER PRIMARY KEY, gene_id INTEGER, summary TEXT, source TEXT);
 ''')
 
 # Insert sample species
@@ -55,6 +56,8 @@ cur.execute("INSERT INTO gene_constraints (gene_id, gene_symbol, pli, loeuf, gno
 # ClinVar
 cur.execute("INSERT INTO clinvar_variants (allele_id, variation_id, gene_id, gene_symbol, variant_name, clinical_significance, phenotype_list, chromosome, start_pos, rs_id) VALUES (1001, 5001, 1, 'BRCA1', 'c.68_69del', 'Pathogenic', 'Breast cancer', '17', 43044295, 123456)")
 cur.execute("INSERT INTO clinvar_gene_summary (gene_id, gene_symbol, pathogenic_alleles) VALUES (1, 'BRCA1', 5)")
+# gene_summaries: minimal row for BRCA1 (gene_id=1) -- required for CI tests
+cur.execute("INSERT INTO gene_summaries (gene_id, summary, source) VALUES (1, 'BRCA1 is a tumor suppressor gene involved in DNA repair.', 'NCBI RefSeq')")
 
 conn.commit()
 conn.close()
