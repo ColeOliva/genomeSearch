@@ -230,6 +230,35 @@ pip install pytest-cov
 pytest tests/ --cov=. --cov-report=html
 ```
 
+## Caching & Invalidation ✅
+
+- The server uses a small in-process expiring cache by default to speed up `/search` responses for identical queries.
+- For multi-process or production deployments you can enable Redis as a cache backend:
+
+```bash
+# Example (optional): use Redis for caching
+export CACHE_BACKEND=redis
+export REDIS_URL=redis://localhost:6379/0
+pip install redis
+```
+
+- Cache invalidation:
+  - Import scripts (e.g., `import_gwas.py`, `import_gnomad.py`, `import_clinvar.py`, `import_gene_summaries.py`) automatically bump the database file's modification time when they finish, which ensures cached search results are invalidated shortly after imports.
+  - You can also clear the cache manually via an admin endpoint:
+
+```bash
+# If ADMIN_CLEAR_TOKEN is NOT set (dev):
+curl -X POST http://localhost:5000/_admin/clear_cache
+
+# If ADMIN_CLEAR_TOKEN is set (recommended for production):
+export ADMIN_CLEAR_TOKEN=verysecret
+curl -X POST -H "X-Admin-Token: $ADMIN_CLEAR_TOKEN" http://localhost:5000/_admin/clear_cache
+```
+
+- Notes:
+  - The in-process cache is fine for local development. For production with multiple worker processes, enable Redis to share cached data across processes and machines.
+  - Tests include cache behavior checks (`tests/test_cache_behavior.py`). The CI workflow runs the test suite on push/PRs.
+
 ## Data Source
 
 Gene data is sourced from the [NCBI Gene Database](https://www.ncbi.nlm.nih.gov/gene):
