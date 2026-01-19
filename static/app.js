@@ -12,6 +12,10 @@ const resultCount = document.getElementById('result-count');
 const geneDetail = document.getElementById('gene-detail');
 const detailContent = document.getElementById('detail-content');
 const closeDetail = document.getElementById('close-detail');
+// Pagination state
+let currentPage = 1;
+const perPage = 50;
+let totalResults = 0;
 
 // Advanced filter elements
 const toggleFiltersBtn = document.getElementById('toggle-filters');
@@ -77,8 +81,8 @@ async function loadSpecies() {
 }
 
 // Search functionality
-async function performSearch(query) {
-    if (!query.trim()) return;
+async function performSearch(query, page = 1) {
+    if (!query || !query.trim()) return;
     
     const species = speciesFilter.value;
     const chromosome = filterChromosome.value;
@@ -88,7 +92,8 @@ async function performSearch(query) {
     const goCategory = filterGoCategory.value;
     
     resultsSection.classList.remove('hidden');
-    resultsList.innerHTML = '<div class="loading">Searching</div>';
+    // show loading only for first page
+    if (page === 1) resultsList.innerHTML = '<div class="loading">Searching</div>';
     queryDisplay.textContent = query;
     
     try {
@@ -99,27 +104,49 @@ async function performSearch(query) {
         if (clinical) url += `&clinical=${clinical}`;
         if (geneType) url += `&gene_type=${geneType}`;
         if (goCategory) url += `&go_category=${goCategory}`;
+        url += `&page=${page}&per_page=${perPage}`;
         
         const response = await fetch(url);
         const data = await response.json();
-        
-        displayResults(data.results);
+        totalResults = data.total || 0;
+        currentPage = data.page || page;
+
+        // If first page, replace results. Otherwise append.
+        displayResults(data.results, page !== 1);
+        renderLoadMore();
     } catch (error) {
         resultsList.innerHTML = '<p class="error">Error searching. Please try again.</p>';
         console.error('Search error:', error);
     }
 }
 
-function displayResults(results) {
-    if (results.length === 0) {
-        resultsList.innerHTML = '<p class="no-results">No genes found. Try different keywords or a different species.</p>';
-        resultCount.textContent = '0 results';
+function renderLoadMore() {
+    // Remove existing button
+    const existing = document.getElementById('load-more-btn');
+    if (existing) existing.remove();
+    const shown = document.querySelectorAll('.gene-card').length;
+    if (shown < totalResults) {
+        const btn = document.createElement('button');
+        btn.id = 'load-more-btn';
+        btn.className = 'load-more-btn';
+        btn.textContent = `Load more (${Math.min(perPage, totalResults - shown)} more)`;
+        btn.addEventListener('click', () => {
+            performSearch(searchInput.value, currentPage + 1);
+        });
+        resultsSection.appendChild(btn);
+    }
+}
+
+function displayResults(results, append = false) {
+    if (!results || results.length === 0) {
+        if (!append) {
+            resultsList.innerHTML = '<p class="no-results">No genes found. Try different keywords or a different species.</p>';
+            resultCount.textContent = '0 results';
+        }
         return;
     }
-    
-    resultCount.textContent = `${results.length} result${results.length !== 1 ? 's' : ''}`;
-    
-    resultsList.innerHTML = results.map(gene => {
+
+    const html = results.map(gene => {
         // Determine constraint status
         let constraintBadge = '';
         if (gene.pli !== null && gene.pli > 0.9) {
@@ -174,12 +201,29 @@ function displayResults(results) {
         </div>
         `;
     }).join('');
-    
-    // Add click handlers
+
+    if (append) {
+        resultsList.innerHTML += html;
+    } else {
+        resultsList.innerHTML = html;
+    }
+
+    // Update result count using totalResults if available
+    const shown = document.querySelectorAll('.gene-card').length;
+    if (totalResults) {
+        resultCount.textContent = `${shown} of ${totalResults} result${totalResults !== 1 ? 's' : ''}`;
+    } else {
+        resultCount.textContent = `${shown} result${shown !== 1 ? 's' : ''}`;
+    }
+
+    // Add click handlers for new cards
     document.querySelectorAll('.gene-card').forEach(card => {
-        card.addEventListener('click', () => {
-            showGeneDetail(card.dataset.geneId);
-        });
+        if (!card.dataset._clickAttached) {
+            card.addEventListener('click', () => {
+                showGeneDetail(card.dataset.geneId);
+            });
+            card.dataset._clickAttached = '1';
+        }
     });
 }
 

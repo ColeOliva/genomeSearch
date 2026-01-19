@@ -214,7 +214,6 @@ genomeSearch/
 | `/chromosome/<chrom>?species=<tax_id>` | GET | Get genes on a chromosome |
 
 ## Running Tests
-
 ```bash
 # Install pytest if needed
 pip install pytest
@@ -228,6 +227,29 @@ pytest tests/test_app.py -v
 # Run with coverage
 pip install pytest-cov
 pytest tests/ --cov=. --cov-report=html
+```
+
+### CI and Sample Database
+
+**Continuous Integration (CI) uses a minimal sample database (`tests/fixtures/sample.db`) for fast, portable testing.**
+
+- The sample DB is created by `tests/fixtures/create_sample_db.py` and contains only the minimal schema and data needed for basic endpoint and integrity tests.
+- Some feature tests (e.g., those requiring full production schema or large data) are automatically skipped in CI/sample DB mode.
+- This ensures CI is fast and reliable, but not all features are covered in CI. Full test coverage is only possible with the full production database.
+
+#### Running Full Test Suite Locally
+
+To run all tests (including those skipped in CI), set up the full production database as described in the Installation section, then run:
+
+```bash
+pytest tests/ -v
+```
+
+If you want to regenerate the sample DB (e.g., after a schema change):
+
+```bash
+rm tests/fixtures/sample.db  # or del tests\fixtures\sample.db on Windows
+python tests/fixtures/create_sample_db.py
 ```
 
 ## Caching & Invalidation ✅

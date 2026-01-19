@@ -1,8 +1,8 @@
 """Create a small sample SQLite database used for CI lightweight tests.
 This avoids downloading the full genome DB in CI.
 """
-import sqlite3
 import os
+import sqlite3
 
 DB = os.path.join(os.path.dirname(__file__), 'sample.db')
 

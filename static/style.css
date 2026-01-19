@@ -245,6 +245,21 @@ main {
     gap: 1rem;
 }
 
+.load-more-btn {
+    display: inline-block;
+    margin: 1rem 0 2rem 0;
+    padding: 0.6rem 1rem;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text);
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.load-more-btn:hover {
+    background: #f3f4f6;
+}
+
 /* Gene Card */
 .gene-card {
     background: var(--card-bg);
