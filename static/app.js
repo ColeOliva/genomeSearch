@@ -133,6 +133,23 @@ function displayResults(results) {
         if (gene.clinvar_pathogenic && gene.clinvar_pathogenic > 0) {
             clinvarBadge = `<span class="clinvar-badge" title="${gene.clinvar_pathogenic} pathogenic variants in ClinVar">⚕️ ${gene.clinvar_pathogenic} pathogenic</span>`;
         }
+        // Functional summary badge (available)
+        let summaryBadge = '';
+        if (gene.has_summary) {
+            summaryBadge = `<span class="summary-badge" title="Functional summary available">📖</span>`;
+        }
+        // gnomAD badge (presence of constraint metrics)
+        let gnomadBadge = '';
+        if (gene.pli !== null || gene.loeuf !== null) {
+            const pliText = (gene.pli !== null && !Number.isNaN(Number(gene.pli))) ? Number(gene.pli).toFixed(2) : 'NA';
+            const loeufText = (gene.loeuf !== null && !Number.isNaN(Number(gene.loeuf))) ? Number(gene.loeuf).toFixed(2) : 'NA';
+            gnomadBadge = `<span class="gnomad-badge" title="gnomAD pLI: ${pliText}, LOEUF: ${loeufText}">GNOMAD</span>`;
+        }
+        // GWAS presence badge
+        let gwasBadge = '';
+        if (gene.has_gwas) {
+            gwasBadge = `<span class="gwas-badge" title="This gene has GWAS associations">GWAS</span>`;
+        }
         
         return `
         <div class="gene-card" data-gene-id="${gene.gene_id}">
@@ -141,13 +158,16 @@ function displayResults(results) {
                 <span class="gene-name">${escapeHtml(gene.name || '')}</span>
                 ${constraintBadge}
                 ${clinvarBadge}
+                ${gnomadBadge}
+                ${summaryBadge}
+                ${gwasBadge}
                 ${gene.trait_count > 0 ? `<span class="trait-badge" title="${gene.trait_count} GWAS associations">🧬 ${gene.trait_count}</span>` : ''}
             </div>
             <div class="gene-meta">
                 ${gene.species_name ? `<span class="species-badge">${escapeHtml(gene.species_name)}</span>` : ''}
                 ${gene.chromosome ? `<span class="chromosome-badge">Chr ${escapeHtml(gene.chromosome)}</span>` : ''}
                 ${gene.map_location ? `<span>📍 ${escapeHtml(gene.map_location)}</span>` : ''}
-                ${gene.gene_type && gene.gene_type !== 'unknown' ? `<span>🏷️ ${escapeHtml(gene.gene_type)}</span>` : ''}
+                ${gene.gene_type && gene.gene_type !== 'unknown' ? `<span class="gene-type-badge">🏷️ ${escapeHtml(gene.gene_type)}</span>` : ''}
             </div>
             ${gene.description ? `<p class="gene-description">${escapeHtml(truncate(gene.description, 200))}</p>` : ''}
             ${gene.matched_text ? `<p class="gene-description"><small>Match: ${gene.matched_text}</small></p>` : ''}

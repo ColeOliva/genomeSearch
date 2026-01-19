@@ -107,9 +107,11 @@ def search():
                    s.common_name as species_name,
                    snippet(gene_fts, 1, '<mark>', '</mark>', '...', 32) as matched_text,
                    (SELECT COUNT(*) FROM gene_traits gt WHERE gt.gene_id = g.gene_id) as trait_count,
-                   (SELECT MAX(pli) FROM gene_constraints gc WHERE gc.gene_id = g.gene_id) as pli,
-                   (SELECT MIN(loeuf) FROM gene_constraints gc WHERE gc.gene_id = g.gene_id) as loeuf,
-                   (SELECT MAX(pathogenic_alleles) FROM clinvar_gene_summary cv WHERE cv.gene_id = g.gene_id) as clinvar_pathogenic
+                                     (SELECT MAX(pli) FROM gene_constraints gc WHERE gc.gene_id = g.gene_id) as pli,
+                                     (SELECT MIN(loeuf) FROM gene_constraints gc WHERE gc.gene_id = g.gene_id) as loeuf,
+                                     (EXISTS (SELECT 1 FROM gene_summaries gs WHERE gs.gene_id = g.gene_id)) as has_summary,
+                                     (EXISTS (SELECT 1 FROM gene_traits gt WHERE gt.gene_id = g.gene_id)) as has_gwas,
+                                     (SELECT MAX(pathogenic_alleles) FROM clinvar_gene_summary cv WHERE cv.gene_id = g.gene_id) as clinvar_pathogenic
             FROM gene_fts
             JOIN genes g ON gene_fts.gene_id = g.gene_id
             JOIN species s ON g.tax_id = s.tax_id
