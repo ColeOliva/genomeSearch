@@ -222,6 +222,7 @@ def search():
     if cached is not None:
         return jsonify(cached)
 
+    total = 0
     try:
 
         # Count total matching rows (gene_fts rows join genes)
