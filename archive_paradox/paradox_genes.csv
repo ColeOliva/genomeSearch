@@ -1,0 +1,37 @@
+symbol,name,loeuf,pli,transcript
+SLC17A7,solute carrier family 17 member 7,0.116,0.99988,ENST00000221485
+TRIM64B,tripartite motif containing 64B,0.118,,NM_001164397.2
+JPH4,junctophilin 4,0.137,0.99948,ENST00000397118
+CENPI,centromere protein I,0.169,0.99974,ENST00000372927
+GPKOW,G-patch domain and KOW motifs,0.187,0.99553,ENST00000156109
+PAXBP1,PAX3 and PAX7 binding protein 1,0.19,0.99999,ENST00000331923
+SRSF11,serine and arginine rich splicing factor 11,0.2,,NM_001190987.3
+ZNG1E,Zn regulated GTPase metalloprotein activator 1E,0.205,,XM_005272750.1
+HTATSF1,HIV-1 Tat specific factor 1,0.217,0.9974,ENST00000535601
+PEA15,proliferation and apoptosis adaptor protein 15,0.24,,NM_001297577.2
+AKAP4,A-kinase anchoring protein 4,0.246,0.99323,ENST00000358526
+KLHDC3,kelch domain containing 3,0.256,,NM_057161.4
+EIF2S1,eukaryotic translation initiation factor 2 subunit alpha,0.268,,NM_004094.5
+APEX2,apurinic/apyrimidinic endodeoxyribonuclease 2,0.268,0.97302,ENST00000374987
+TESK1,testis associated actin remodelling kinase 1,0.278,0.99255,ENST00000336395
+ZNF182,zinc finger protein 182,0.279,0.98405,ENST00000396965
+TMEM185B,transmembrane protein 185B,0.28,0.96815,ENST00000426077
+SRF,serum response factor,0.281,,NM_001292001.2
+HMGB2,high mobility group box 2,0.284,,NM_001130688.1
+AJM1,apical junction component 1 homolog,0.285,0.98777,ENST00000436881
+SRSF7,serine and arginine rich splicing factor 7,0.299,0.98203,ENST00000313117
+CDC34,"cell division cycle 34, ubiquitin conjugating enzyme",0.305,0.95625,ENST00000215574
+MAGEE1,MAGE family member E1,0.31,0.97046,ENST00000361470
+VPS29,VPS29 retromer complex component,0.313,,NM_057180.3
+GPRIN1,G protein regulated inducer of neurite outgrowth 1,0.32,0.97001,ENST00000303991
+SPCS2,signal peptidase complex subunit 2,0.332,,ENST00000526883
+GPS1,G protein pathway suppressor 1,0.337,,NM_001321092.3
+RBMX2,RNA binding motif protein X-linked 2,0.337,0.93892,ENST00000305536
+ELK1,ETS transcription factor ELK1,0.341,0.93711,ENST00000247161
+LYPLA2,lysophospholipase 2,0.344,0.94955,ENST00000374514
+POTEG,POTE ankyrin domain family member G,0.346,,NM_001005356.3
+POTEM,POTE ankyrin domain family member M,0.347,,NM_001145442.1
+MOSPD1,motile sperm domain containing 1,0.361,0.92491,ENST00000370783
+WDR13,WD repeat domain 13,0.362,0.93514,ENST00000218056
+RPS27A,ribosomal protein S27a,0.37,0.91944,ENST00000272317
+STRAP,serine/threonine kinase receptor associated protein,0.375,0.90143,ENST00000419869

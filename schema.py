@@ -183,6 +183,29 @@ def create_schema(conn):
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_clinvar_variants_chr ON clinvar_variants(chromosome)')
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_clinvar_variants_significance ON clinvar_variants(clinical_significance)')
     
+    # Mouse Phenotype Dictionary
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS mouse_phenotype_terms (
+            mp_id TEXT PRIMARY KEY,
+            term_name TEXT NOT NULL,
+            description TEXT
+        )
+    ''')
+    
+    # Mouse Phenotypes Mapping
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS mouse_phenotypes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            gene_id INTEGER NOT NULL,
+            mouse_symbol TEXT,
+            mp_id TEXT NOT NULL,
+            FOREIGN KEY (gene_id) REFERENCES genes(gene_id),
+            FOREIGN KEY (mp_id) REFERENCES mouse_phenotype_terms(mp_id)
+        )
+    ''')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_mouse_phenotypes_gene ON mouse_phenotypes(gene_id)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_mouse_phenotypes_mp ON mouse_phenotypes(mp_id)')
+    
     conn.commit()
     print("Database schema created successfully.")
 

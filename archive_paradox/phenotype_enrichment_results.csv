@@ -1,0 +1,23 @@
+Phenotype,Paradox_Rate_%,Baseline_Rate_%,Odds_Ratio,P_Value
+reproductive system phenotype,24.0,29.1,0.77,0.7780962037769512
+pigmentation phenotype,4.0,7.6,0.5,0.862918718563964
+neoplasm,4.0,8.7,0.44,0.8974991491959252
+homeostasis/metabolism phenotype,44.0,55.2,0.64,0.9061144486995936
+endocrine/exocrine gland phenotype,20.0,30.9,0.56,0.9229158588772569
+vision/eye phenotype,16.0,28.7,0.47,0.9545843999175815
+craniofacial phenotype,8.0,18.8,0.38,0.9621811196138744
+adipose tissue phenotype,4.0,12.9,0.28,0.9681585202397172
+integument phenotype,12.0,25.1,0.41,0.9683387849302494
+embryo phenotype,16.0,31.2,0.42,0.9743721280863559
+cellular phenotype,32.0,49.5,0.48,0.9752621992332835
+cardiovascular system phenotype,20.0,36.9,0.43,0.979243110226853
+renal/urinary system phenotype,4.0,16.2,0.22,0.9878854023415058
+respiratory system phenotype,4.0,17.6,0.2,0.9918898605919997
+nervous system phenotype,24.0,46.4,0.36,0.9940633924257868
+muscle phenotype,4.0,19.4,0.17,0.9954266152270503
+immune system phenotype,16.0,38.8,0.3,0.9965480696613794
+hematopoietic system phenotype,20.0,44.0,0.32,0.996836375855615
+behavior/neurological phenotype,24.0,50.6,0.31,0.9982387228988376
+skeleton phenotype,8.0,29.7,0.21,0.9982454948771907
+mortality/aging,40.0,68.1,0.31,0.998974151746791
+growth/size/body region phenotype,28.0,61.5,0.24,0.9998335046375225

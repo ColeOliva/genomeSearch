@@ -1,0 +1,308 @@
+symbol,loeuf,pli,mouse_symbol,mouse_phenotype
+SLC17A7,0.116,0.99988,Slc17a7,nervous system phenotype
+SLC17A7,0.116,0.99988,Slc17a7,growth/size/body region phenotype
+SLC17A7,0.116,0.99988,Slc17a7,cellular phenotype
+SLC17A7,0.116,0.99988,Slc17a7,behavior/neurological phenotype
+SLC17A7,0.116,0.99988,Slc17a7,vision/eye phenotype
+SLC17A7,0.116,0.99988,Slc17a7,mortality/aging
+JPH4,0.137,0.99948,Jph4,homeostasis/metabolism phenotype
+JPH4,0.137,0.99948,Jph4,immune system phenotype
+JPH4,0.137,0.99948,Jph4,hematopoietic system phenotype
+PAXBP1,0.19,0.99999,Paxbp1,mortality/aging
+SRSF11,0.199,,Srsf11,nervous system phenotype
+SRSF11,0.199,,Srsf11,cardiovascular system phenotype
+SRSF11,0.199,,Srsf11,mortality/aging
+SRSF11,0.199,,Srsf11,nervous system phenotype
+SRSF11,0.199,,Srsf11,cardiovascular system phenotype
+SRSF11,0.199,,Srsf11,mortality/aging
+SRSF11,0.2,,Srsf11,nervous system phenotype
+SRSF11,0.2,,Srsf11,cardiovascular system phenotype
+SRSF11,0.2,,Srsf11,mortality/aging
+SRSF11,0.2,,Srsf11,nervous system phenotype
+SRSF11,0.2,,Srsf11,cardiovascular system phenotype
+SRSF11,0.2,,Srsf11,mortality/aging
+SRSF11,0.2,,Srsf11,nervous system phenotype
+SRSF11,0.2,,Srsf11,cardiovascular system phenotype
+SRSF11,0.2,,Srsf11,mortality/aging
+SRSF11,0.2,,Srsf11,nervous system phenotype
+SRSF11,0.2,,Srsf11,cardiovascular system phenotype
+SRSF11,0.2,,Srsf11,mortality/aging
+SRSF11,0.2,,Srsf11,nervous system phenotype
+SRSF11,0.2,,Srsf11,cardiovascular system phenotype
+SRSF11,0.2,,Srsf11,mortality/aging
+ZNG1E,0.205,,Zng1,renal/urinary system phenotype
+ZNG1E,0.205,,Zng1,cardiovascular system phenotype
+ZNG1E,0.205,,Zng1,behavior/neurological phenotype
+ZNG1E,0.205,,Zng1,renal/urinary system phenotype
+ZNG1E,0.205,,Zng1,cardiovascular system phenotype
+ZNG1E,0.205,,Zng1,behavior/neurological phenotype
+HTATSF1,0.217,0.9974,Htatsf1,embryo phenotype
+GPS1,0.231,0.99819,Gps1,mortality/aging
+SRSF11,0.233,0.99806,Srsf11,nervous system phenotype
+SRSF11,0.233,0.99806,Srsf11,cardiovascular system phenotype
+SRSF11,0.233,0.99806,Srsf11,mortality/aging
+SRSF11,0.234,,Srsf11,nervous system phenotype
+SRSF11,0.234,,Srsf11,cardiovascular system phenotype
+SRSF11,0.234,,Srsf11,mortality/aging
+SRSF11,0.234,,Srsf11,nervous system phenotype
+SRSF11,0.234,,Srsf11,cardiovascular system phenotype
+SRSF11,0.234,,Srsf11,mortality/aging
+SRSF11,0.234,,Srsf11,nervous system phenotype
+SRSF11,0.234,,Srsf11,cardiovascular system phenotype
+SRSF11,0.234,,Srsf11,mortality/aging
+SRSF11,0.234,,Srsf11,nervous system phenotype
+SRSF11,0.234,,Srsf11,cardiovascular system phenotype
+SRSF11,0.234,,Srsf11,mortality/aging
+SRSF11,0.234,,Srsf11,nervous system phenotype
+SRSF11,0.234,,Srsf11,cardiovascular system phenotype
+SRSF11,0.234,,Srsf11,mortality/aging
+SRSF11,0.234,,Srsf11,nervous system phenotype
+SRSF11,0.234,,Srsf11,cardiovascular system phenotype
+SRSF11,0.234,,Srsf11,mortality/aging
+PEA15,0.24,,Pea15a,nervous system phenotype
+PEA15,0.24,,Pea15a,growth/size/body region phenotype
+PEA15,0.24,,Pea15a,cellular phenotype
+PEA15,0.24,,Pea15a,reproductive system phenotype
+PEA15,0.24,,Pea15a,nervous system phenotype
+PEA15,0.24,,Pea15a,growth/size/body region phenotype
+PEA15,0.24,,Pea15a,cellular phenotype
+PEA15,0.24,,Pea15a,reproductive system phenotype
+PEA15,0.24,,Pea15a,nervous system phenotype
+PEA15,0.24,,Pea15a,growth/size/body region phenotype
+PEA15,0.24,,Pea15a,cellular phenotype
+PEA15,0.24,,Pea15a,reproductive system phenotype
+PEA15,0.24,,Pea15a,nervous system phenotype
+PEA15,0.24,,Pea15a,growth/size/body region phenotype
+PEA15,0.24,,Pea15a,cellular phenotype
+PEA15,0.24,,Pea15a,reproductive system phenotype
+AKAP4,0.246,0.99323,Akap4,cellular phenotype
+AKAP4,0.246,0.99323,Akap4,reproductive system phenotype
+EIF2S1,0.256,,Eif2s1,nervous system phenotype
+EIF2S1,0.256,,Eif2s1,homeostasis/metabolism phenotype
+EIF2S1,0.256,,Eif2s1,endocrine/exocrine gland phenotype
+EIF2S1,0.256,,Eif2s1,embryo phenotype
+EIF2S1,0.256,,Eif2s1,behavior/neurological phenotype
+EIF2S1,0.256,,Eif2s1,reproductive system phenotype
+EIF2S1,0.256,,Eif2s1,skeleton phenotype
+EIF2S1,0.256,,Eif2s1,vision/eye phenotype
+EIF2S1,0.256,,Eif2s1,mortality/aging
+EIF2S1,0.256,,Eif2s1,integument phenotype
+APEX2,0.268,0.97302,Apex2,pigmentation phenotype
+APEX2,0.268,0.97302,Apex2,homeostasis/metabolism phenotype
+APEX2,0.268,0.97302,Apex2,growth/size/body region phenotype
+APEX2,0.268,0.97302,Apex2,endocrine/exocrine gland phenotype
+APEX2,0.268,0.97302,Apex2,craniofacial phenotype
+APEX2,0.268,0.97302,Apex2,cellular phenotype
+APEX2,0.268,0.97302,Apex2,behavior/neurological phenotype
+APEX2,0.268,0.97302,Apex2,immune system phenotype
+APEX2,0.268,0.97302,Apex2,hematopoietic system phenotype
+APEX2,0.268,0.97302,Apex2,integument phenotype
+EIF2S1,0.268,,Eif2s1,nervous system phenotype
+EIF2S1,0.268,,Eif2s1,homeostasis/metabolism phenotype
+EIF2S1,0.268,,Eif2s1,endocrine/exocrine gland phenotype
+EIF2S1,0.268,,Eif2s1,embryo phenotype
+EIF2S1,0.268,,Eif2s1,behavior/neurological phenotype
+EIF2S1,0.268,,Eif2s1,reproductive system phenotype
+EIF2S1,0.268,,Eif2s1,skeleton phenotype
+EIF2S1,0.268,,Eif2s1,vision/eye phenotype
+EIF2S1,0.268,,Eif2s1,mortality/aging
+EIF2S1,0.268,,Eif2s1,integument phenotype
+EIF2S1,0.268,,Eif2s1,nervous system phenotype
+EIF2S1,0.268,,Eif2s1,homeostasis/metabolism phenotype
+EIF2S1,0.268,,Eif2s1,endocrine/exocrine gland phenotype
+EIF2S1,0.268,,Eif2s1,embryo phenotype
+EIF2S1,0.268,,Eif2s1,behavior/neurological phenotype
+EIF2S1,0.268,,Eif2s1,reproductive system phenotype
+EIF2S1,0.268,,Eif2s1,skeleton phenotype
+EIF2S1,0.268,,Eif2s1,vision/eye phenotype
+EIF2S1,0.268,,Eif2s1,mortality/aging
+EIF2S1,0.268,,Eif2s1,integument phenotype
+EIF2S1,0.268,,Eif2s1,nervous system phenotype
+EIF2S1,0.268,,Eif2s1,homeostasis/metabolism phenotype
+EIF2S1,0.268,,Eif2s1,endocrine/exocrine gland phenotype
+EIF2S1,0.268,,Eif2s1,embryo phenotype
+EIF2S1,0.268,,Eif2s1,behavior/neurological phenotype
+EIF2S1,0.268,,Eif2s1,reproductive system phenotype
+EIF2S1,0.268,,Eif2s1,skeleton phenotype
+EIF2S1,0.268,,Eif2s1,vision/eye phenotype
+EIF2S1,0.268,,Eif2s1,mortality/aging
+EIF2S1,0.268,,Eif2s1,integument phenotype
+PEA15,0.277,,Pea15a,nervous system phenotype
+PEA15,0.277,,Pea15a,growth/size/body region phenotype
+PEA15,0.277,,Pea15a,cellular phenotype
+PEA15,0.277,,Pea15a,reproductive system phenotype
+PEA15,0.277,,Pea15a,nervous system phenotype
+PEA15,0.277,,Pea15a,growth/size/body region phenotype
+PEA15,0.277,,Pea15a,cellular phenotype
+PEA15,0.277,,Pea15a,reproductive system phenotype
+TESK1,0.278,0.99255,Tesk1,homeostasis/metabolism phenotype
+ZNF182,0.279,0.98405,Zfp182,homeostasis/metabolism phenotype
+ZNF182,0.279,0.98405,Zfp182,vision/eye phenotype
+TMEM185B,0.28,0.96815,Tmem185b,behavior/neurological phenotype
+TMEM185B,0.28,0.96815,Tmem185b,vision/eye phenotype
+SRF,0.281,,Srf,muscle phenotype
+SRF,0.281,,Srf,homeostasis/metabolism phenotype
+SRF,0.281,,Srf,growth/size/body region phenotype
+SRF,0.281,,Srf,endocrine/exocrine gland phenotype
+SRF,0.281,,Srf,embryo phenotype
+SRF,0.281,,Srf,craniofacial phenotype
+SRF,0.281,,Srf,cellular phenotype
+SRF,0.281,,Srf,cardiovascular system phenotype
+SRF,0.281,,Srf,behavior/neurological phenotype
+SRF,0.281,,Srf,immune system phenotype
+SRF,0.281,,Srf,respiratory system phenotype
+SRF,0.281,,Srf,skeleton phenotype
+SRF,0.281,,Srf,hematopoietic system phenotype
+SRF,0.281,,Srf,mortality/aging
+HMGB2,0.284,,Hmgb2,endocrine/exocrine gland phenotype
+HMGB2,0.284,,Hmgb2,cellular phenotype
+HMGB2,0.284,,Hmgb2,reproductive system phenotype
+HMGB2,0.284,,Hmgb2,endocrine/exocrine gland phenotype
+HMGB2,0.284,,Hmgb2,cellular phenotype
+HMGB2,0.284,,Hmgb2,reproductive system phenotype
+HMGB2,0.284,,Hmgb2,endocrine/exocrine gland phenotype
+HMGB2,0.284,,Hmgb2,cellular phenotype
+HMGB2,0.284,,Hmgb2,reproductive system phenotype
+HMGB2,0.284,,Hmgb2,endocrine/exocrine gland phenotype
+HMGB2,0.284,,Hmgb2,cellular phenotype
+HMGB2,0.284,,Hmgb2,reproductive system phenotype
+HMGB2,0.284,,Hmgb2,endocrine/exocrine gland phenotype
+HMGB2,0.284,,Hmgb2,cellular phenotype
+HMGB2,0.284,,Hmgb2,reproductive system phenotype
+HMGB2,0.284,,Hmgb2,endocrine/exocrine gland phenotype
+HMGB2,0.284,,Hmgb2,cellular phenotype
+HMGB2,0.284,,Hmgb2,reproductive system phenotype
+AJM1,0.285,0.98777,Ajm1,immune system phenotype
+AJM1,0.285,0.98777,Ajm1,hematopoietic system phenotype
+SRSF11,0.293,,Srsf11,nervous system phenotype
+SRSF11,0.293,,Srsf11,cardiovascular system phenotype
+SRSF11,0.293,,Srsf11,mortality/aging
+SRSF11,0.293,,Srsf11,nervous system phenotype
+SRSF11,0.293,,Srsf11,cardiovascular system phenotype
+SRSF11,0.293,,Srsf11,mortality/aging
+SRSF11,0.293,,Srsf11,nervous system phenotype
+SRSF11,0.293,,Srsf11,cardiovascular system phenotype
+SRSF11,0.293,,Srsf11,mortality/aging
+SRSF11,0.293,,Srsf11,nervous system phenotype
+SRSF11,0.293,,Srsf11,cardiovascular system phenotype
+SRSF11,0.293,,Srsf11,mortality/aging
+SRSF11,0.293,,Srsf11,nervous system phenotype
+SRSF11,0.293,,Srsf11,cardiovascular system phenotype
+SRSF11,0.293,,Srsf11,mortality/aging
+SRSF11,0.293,,Srsf11,nervous system phenotype
+SRSF11,0.293,,Srsf11,cardiovascular system phenotype
+SRSF11,0.293,,Srsf11,mortality/aging
+SRSF7,0.299,0.98203,Srsf7,growth/size/body region phenotype
+SRSF7,0.299,0.98203,Srsf7,mortality/aging
+SRF,0.3,0.97545,Srf,muscle phenotype
+SRF,0.3,0.97545,Srf,homeostasis/metabolism phenotype
+SRF,0.3,0.97545,Srf,growth/size/body region phenotype
+SRF,0.3,0.97545,Srf,endocrine/exocrine gland phenotype
+SRF,0.3,0.97545,Srf,embryo phenotype
+SRF,0.3,0.97545,Srf,craniofacial phenotype
+SRF,0.3,0.97545,Srf,cellular phenotype
+SRF,0.3,0.97545,Srf,cardiovascular system phenotype
+SRF,0.3,0.97545,Srf,behavior/neurological phenotype
+SRF,0.3,0.97545,Srf,immune system phenotype
+SRF,0.3,0.97545,Srf,respiratory system phenotype
+SRF,0.3,0.97545,Srf,skeleton phenotype
+SRF,0.3,0.97545,Srf,hematopoietic system phenotype
+SRF,0.3,0.97545,Srf,mortality/aging
+SRSF11,0.303,,Srsf11,nervous system phenotype
+SRSF11,0.303,,Srsf11,cardiovascular system phenotype
+SRSF11,0.303,,Srsf11,mortality/aging
+SRSF11,0.303,,Srsf11,nervous system phenotype
+SRSF11,0.303,,Srsf11,cardiovascular system phenotype
+SRSF11,0.303,,Srsf11,mortality/aging
+EIF2S1,0.304,,Eif2s1,nervous system phenotype
+EIF2S1,0.304,,Eif2s1,homeostasis/metabolism phenotype
+EIF2S1,0.304,,Eif2s1,endocrine/exocrine gland phenotype
+EIF2S1,0.304,,Eif2s1,embryo phenotype
+EIF2S1,0.304,,Eif2s1,behavior/neurological phenotype
+EIF2S1,0.304,,Eif2s1,reproductive system phenotype
+EIF2S1,0.304,,Eif2s1,skeleton phenotype
+EIF2S1,0.304,,Eif2s1,vision/eye phenotype
+EIF2S1,0.304,,Eif2s1,mortality/aging
+EIF2S1,0.304,,Eif2s1,integument phenotype
+CDC34,0.305,0.95625,Cdc34,homeostasis/metabolism phenotype
+CDC34,0.305,0.95625,Cdc34,reproductive system phenotype
+CDC34,0.305,0.95625,Cdc34,mortality/aging
+CDC34,0.305,0.95625,Cdc34,integument phenotype
+EIF2S1,0.31,0.97031,Eif2s1,nervous system phenotype
+EIF2S1,0.31,0.97031,Eif2s1,homeostasis/metabolism phenotype
+EIF2S1,0.31,0.97031,Eif2s1,endocrine/exocrine gland phenotype
+EIF2S1,0.31,0.97031,Eif2s1,embryo phenotype
+EIF2S1,0.31,0.97031,Eif2s1,behavior/neurological phenotype
+EIF2S1,0.31,0.97031,Eif2s1,reproductive system phenotype
+EIF2S1,0.31,0.97031,Eif2s1,skeleton phenotype
+EIF2S1,0.31,0.97031,Eif2s1,vision/eye phenotype
+EIF2S1,0.31,0.97031,Eif2s1,mortality/aging
+EIF2S1,0.31,0.97031,Eif2s1,integument phenotype
+VPS29,0.313,,Vps29,nervous system phenotype
+VPS29,0.313,,Vps29,mortality/aging
+VPS29,0.313,,Vps29,nervous system phenotype
+VPS29,0.313,,Vps29,mortality/aging
+HMGB2,0.315,0.95087,Hmgb2,endocrine/exocrine gland phenotype
+HMGB2,0.315,0.95087,Hmgb2,cellular phenotype
+HMGB2,0.315,0.95087,Hmgb2,reproductive system phenotype
+GPRIN1,0.32,0.97001,Gprin1,homeostasis/metabolism phenotype
+SRSF11,0.329,,Srsf11,nervous system phenotype
+SRSF11,0.329,,Srsf11,cardiovascular system phenotype
+SRSF11,0.329,,Srsf11,mortality/aging
+HMGB2,0.33,,Hmgb2,endocrine/exocrine gland phenotype
+HMGB2,0.33,,Hmgb2,cellular phenotype
+HMGB2,0.33,,Hmgb2,reproductive system phenotype
+SRSF11,0.334,,Srsf11,nervous system phenotype
+SRSF11,0.334,,Srsf11,cardiovascular system phenotype
+SRSF11,0.334,,Srsf11,mortality/aging
+SRSF11,0.334,,Srsf11,nervous system phenotype
+SRSF11,0.334,,Srsf11,cardiovascular system phenotype
+SRSF11,0.334,,Srsf11,mortality/aging
+SRSF11,0.334,,Srsf11,nervous system phenotype
+SRSF11,0.334,,Srsf11,cardiovascular system phenotype
+SRSF11,0.334,,Srsf11,mortality/aging
+SRSF11,0.334,,Srsf11,nervous system phenotype
+SRSF11,0.334,,Srsf11,cardiovascular system phenotype
+SRSF11,0.334,,Srsf11,mortality/aging
+GPS1,0.337,,Gps1,mortality/aging
+GPS1,0.337,,Gps1,mortality/aging
+ELK1,0.341,0.93711,Elk1,homeostasis/metabolism phenotype
+ELK1,0.341,0.93711,Elk1,growth/size/body region phenotype
+ELK1,0.341,0.93711,Elk1,cellular phenotype
+ELK1,0.341,0.93711,Elk1,cardiovascular system phenotype
+ELK1,0.341,0.93711,Elk1,reproductive system phenotype
+GPS1,0.341,,Gps1,mortality/aging
+GPS1,0.341,,Gps1,mortality/aging
+GPS1,0.341,,Gps1,mortality/aging
+GPS1,0.341,,Gps1,mortality/aging
+GPS1,0.341,,Gps1,mortality/aging
+SRSF11,0.343,,Srsf11,nervous system phenotype
+SRSF11,0.343,,Srsf11,cardiovascular system phenotype
+SRSF11,0.343,,Srsf11,mortality/aging
+SRSF11,0.343,,Srsf11,nervous system phenotype
+SRSF11,0.343,,Srsf11,cardiovascular system phenotype
+SRSF11,0.343,,Srsf11,mortality/aging
+SRSF11,0.343,,Srsf11,nervous system phenotype
+SRSF11,0.343,,Srsf11,cardiovascular system phenotype
+SRSF11,0.343,,Srsf11,mortality/aging
+SRSF11,0.343,,Srsf11,nervous system phenotype
+SRSF11,0.343,,Srsf11,cardiovascular system phenotype
+SRSF11,0.343,,Srsf11,mortality/aging
+SRSF11,0.343,,Srsf11,nervous system phenotype
+SRSF11,0.343,,Srsf11,cardiovascular system phenotype
+SRSF11,0.343,,Srsf11,mortality/aging
+SRSF11,0.343,,Srsf11,nervous system phenotype
+SRSF11,0.343,,Srsf11,cardiovascular system phenotype
+SRSF11,0.343,,Srsf11,mortality/aging
+MOSPD1,0.361,0.92491,Mospd1,hematopoietic system phenotype
+WDR13,0.362,0.93514,Wdr13,adipose tissue phenotype
+WDR13,0.362,0.93514,Wdr13,homeostasis/metabolism phenotype
+WDR13,0.362,0.93514,Wdr13,growth/size/body region phenotype
+WDR13,0.362,0.93514,Wdr13,endocrine/exocrine gland phenotype
+WDR13,0.362,0.93514,Wdr13,cellular phenotype
+STRAP,0.375,0.90143,Strap,neoplasm
+STRAP,0.375,0.90143,Strap,nervous system phenotype
+STRAP,0.375,0.90143,Strap,homeostasis/metabolism phenotype
+STRAP,0.375,0.90143,Strap,embryo phenotype
+STRAP,0.375,0.90143,Strap,cardiovascular system phenotype
+STRAP,0.375,0.90143,Strap,mortality/aging
