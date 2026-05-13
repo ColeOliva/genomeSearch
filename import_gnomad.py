@@ -63,13 +63,27 @@ def create_table_if_not_exists(conn):
 
 
 def get_gene_id_map(conn):
-    """Build a mapping from gene symbols to gene_ids (for human genes)."""
+    """Build a mapping from gene symbols and synonyms to gene_ids (for human genes)."""
     cursor = conn.cursor()
     # Get human genes (tax_id 9606)
     cursor.execute('''
         SELECT gene_id, UPPER(symbol) FROM genes WHERE tax_id = 9606
     ''')
-    return {row[1]: row[0] for row in cursor.fetchall()}
+    gene_map = {row[1]: row[0] for row in cursor.fetchall()}
+    
+    # Map synonyms
+    cursor.execute('''
+        SELECT s.synonym, s.gene_id 
+        FROM gene_synonyms s
+        JOIN genes g ON s.gene_id = g.gene_id
+        WHERE g.tax_id = 9606
+    ''')
+    for synonym, gene_id in cursor.fetchall():
+        syn = synonym.upper()
+        if syn not in gene_map:
+            gene_map[syn] = gene_id
+            
+    return gene_map
 
 
 def parse_float(value):
@@ -120,6 +134,8 @@ def import_v4_constraints(conn, gene_map):
             
             if gene_id:
                 matched += 1
+            else:
+                continue  # Skip unmapped genes to enforce NOT NULL
             
             # Extract constraint metrics - column names vary by version
             batch.append((
@@ -198,6 +214,8 @@ def import_v2_lof_metrics(conn, gene_map):
             
             if gene_id:
                 matched += 1
+            else:
+                continue  # Skip unmapped genes to enforce NOT NULL
             
             batch.append((
                 gene_id,

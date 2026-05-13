@@ -89,7 +89,7 @@ def create_schema(conn):
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS gene_constraints (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            gene_id INTEGER,
+            gene_id INTEGER NOT NULL,
             gene_symbol TEXT NOT NULL,
             transcript TEXT,
             
@@ -121,7 +121,7 @@ def create_schema(conn):
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS clinvar_gene_summary (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            gene_id INTEGER,
+            gene_id INTEGER NOT NULL,
             gene_symbol TEXT NOT NULL,
             total_submissions INTEGER DEFAULT 0,
             total_alleles INTEGER DEFAULT 0,
@@ -140,7 +140,7 @@ def create_schema(conn):
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             allele_id INTEGER NOT NULL,
             variation_id INTEGER,
-            gene_id INTEGER,
+            gene_id INTEGER NOT NULL,
             gene_symbol TEXT,
             variant_name TEXT,
             variant_type TEXT,

@@ -50,7 +50,7 @@ def create_gwas_tables(conn):
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS gene_traits (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            gene_id INTEGER,
+            gene_id INTEGER NOT NULL,
             gene_symbol TEXT NOT NULL,
             trait_id INTEGER,
             reported_trait TEXT,
@@ -84,12 +84,26 @@ def create_gwas_tables(conn):
 
 
 def get_gene_id_map(conn):
-    """Get mapping of gene symbols to gene_ids for human genes."""
+    """Get mapping of gene symbols and synonyms to gene_ids for human genes."""
     cursor = conn.cursor()
+    
+    # Map primary symbols
+    cursor.execute('SELECT symbol, gene_id FROM genes WHERE tax_id = 9606')
+    gene_map = {row[0].upper(): row[1] for row in cursor.fetchall()}
+    
+    # Map synonyms
     cursor.execute('''
-        SELECT symbol, gene_id FROM genes WHERE tax_id = 9606
+        SELECT s.synonym, s.gene_id 
+        FROM gene_synonyms s
+        JOIN genes g ON s.gene_id = g.gene_id
+        WHERE g.tax_id = 9606
     ''')
-    return {row[0].upper(): row[1] for row in cursor.fetchall()}
+    for synonym, gene_id in cursor.fetchall():
+        syn = synonym.upper()
+        if syn not in gene_map:
+            gene_map[syn] = gene_id
+            
+    return gene_map
 
 
 def parse_p_value(p_str):
@@ -249,6 +263,7 @@ def import_gwas_data(conn):
                     stats['matched_genes'] += 1
                 else:
                     stats['unmatched_genes'].add(symbol)
+                    continue  # Skip unmapped genes to enforce NOT NULL
                 
                 associations_batch.append({
                     'gene_id': gene_id,
