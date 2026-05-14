@@ -1,0 +1,66 @@
+go_term,gene_count,shared_by
+protein binding,5,"ARHGEF3, CFH, FADS2, GCKR, SARM1"
+identical protein binding,2,"CFH, SARM1"
+NAD+ catabolic process,1,SARM1
+NAD+ nucleosidase activity,1,SARM1
+"NAD+ nucleosidase activity, cyclic ADP-ribose generating",1,SARM1
+NADP+ nucleosidase activity,1,SARM1
+Rho protein signal transduction,1,ARHGEF3
+acyl-CoA 6-desaturase activity,1,FADS2
+acyl-CoA desaturase activity,1,FADS2
+alpha-linolenic acid metabolic process,1,FADS2
+arachidonate metabolite production involved in inflammatory response,1,FADS2
+carbohydrate binding,1,GCKR
+carbohydrate derivative binding,1,GCKR
+carbohydrate derivative metabolic process,1,GCKR
+cell development,1,CFH
+central nervous system myelination,1,CFH
+complement activation,1,CFH
+"complement activation, alternative pathway",1,CFH
+complement component C3b binding,1,CFH
+double-stranded DNA binding,1,SARM1
+enzyme binding,1,GCKR
+enzyme inhibitor activity,1,GCKR
+fatty acid biosynthetic process,1,FADS2
+fructose-6-phosphate binding,1,GCKR
+glucose homeostasis,1,GCKR
+glucose sensor activity,1,GCKR
+guanyl-nucleotide exchange factor activity,1,ARHGEF3
+heparan sulfate proteoglycan binding,1,CFH
+heparin binding,1,CFH
+inflammatory response,1,CFH
+intracellular glucose homeostasis,1,GCKR
+intracellular signal transduction,1,ARHGEF3
+kinase inhibitor activity,1,GCKR
+linoleic acid metabolic process,1,FADS2
+lipid metabolic process,1,FADS2
+modification of postsynaptic structure,1,SARM1
+negative regulation of MyD88-independent toll-like receptor signaling pathway,1,SARM1
+negative regulation of glucokinase activity,1,GCKR
+nervous system process,1,SARM1
+neurogenesis,1,CFH
+oxidoreductase activity,1,FADS2
+"oxidoreductase activity, acting on paired donors, with oxidation of a pair of donors resulting in the reduction of molecular oxygen to two molecules of water",1,FADS2
+positive regulation of Rho protein signal transduction,1,ARHGEF3
+positive regulation of cellular response to oxidative stress,1,FADS2
+positive regulation of programmed cell death,1,SARM1
+protein import into nucleus,1,GCKR
+protein localization to mitochondrion,1,SARM1
+protein localization to nucleus,1,GCKR
+proteolysis,1,CFH
+regulation of complement activation,1,CFH
+"regulation of complement activation, alternative pathway",1,CFH
+regulation of complement-dependent cytotoxicity,1,CFH
+regulation of dendrite morphogenesis,1,SARM1
+regulation of glycolytic process,1,GCKR
+regulation of small GTPase mediated signal transduction,1,ARHGEF3
+regulation of synapse pruning,1,SARM1
+response to axon injury,1,SARM1
+response to fructose,1,GCKR
+response to glucose,1,GCKR
+signal transduction,1,SARM1
+signaling adaptor activity,1,SARM1
+stearoyl-CoA 9-desaturase activity,1,FADS2
+triglyceride homeostasis,1,GCKR
+unsaturated fatty acid biosynthetic process,1,FADS2
+urate metabolic process,1,GCKR
