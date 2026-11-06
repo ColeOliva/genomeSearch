@@ -310,6 +310,41 @@ Data is processed for 15 model organisms based on NCBI taxonomy IDs.
 - **Frontend**: Vanilla JavaScript, CSS3
 - **Data**: NCBI Gene Database
 
+## ASP.NET Core Port
+
+The repository also contains an incremental ASP.NET Core port in [`dotnet/`](dotnet/).
+It is a learning and portfolio implementation targeting .NET 8, ASP.NET Core
+Web API, EF Core, and Azure SQL.
+
+The port currently includes:
+
+- SQL Server EF Core models and migrations, including full-text index setup
+- SQLite-to-SQL Server importer with batched `SqlBulkCopy` writes and `--sample`
+  support
+- Gene search with full-text queries, filters, validation, paging, caching, and
+  per-IP rate limiting
+- Normalized Pleiotropy Index calculation with APOE/ABO benchmark tests
+- xUnit unit and `WebApplicationFactory` integration tests
+- GitHub Actions build/test workflow
+
+### Run and test the .NET port
+
+```powershell
+cd dotnet
+dotnet restore GenomeSearch.sln
+dotnet build GenomeSearch.sln
+dotnet test GenomeSearch.Api.Tests/GenomeSearch.Api.Tests.csproj
+dotnet run --project GenomeSearch.Api/GenomeSearch.Api.csproj
+```
+
+The API uses a SQL Server connection string named
+`ConnectionStrings:GenomeSearch`. Configure it through environment variables
+or deployment settings; do not commit credentials.
+
+See the [port specification](dotnet/spec.md) and
+[Azure deployment guide](docs/azure-deploy.md) for schema, behavior,
+migration, importer, and App Service instructions.
+
 ## Performance
 
 - Database size: ~1.2 GB

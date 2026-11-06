@@ -20,3 +20,7 @@ htmlcov/
 # IDE
 .vscode/
 .idea/
+
+# .NET build output
+dotnet/**/bin/
+dotnet/**/obj/
