@@ -1,6 +1,6 @@
-# Genome Search
+# Computational Genomics Platform for Multi-Omic Data Integration and Pleiotropy Analysis
 
-A searchable database of genes across multiple species with interactive chromosome visualization. Search genes by keyword, gene name, or biological function, and explore their chromosomal locations.
+The platform integrates genomic annotations, disease associations, clinical variants, and functional annotations to explore relationships between genes, traits, and biological mechanisms.
 
 ![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
 ![Flask](https://img.shields.io/badge/Flask-3.0-green.svg)
