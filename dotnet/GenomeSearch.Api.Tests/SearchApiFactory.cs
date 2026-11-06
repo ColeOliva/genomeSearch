@@ -3,6 +3,7 @@ using GenomeSearch.Api.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -27,7 +28,9 @@ public sealed class SearchApiFactory : WebApplicationFactory<Program>
         });
         builder.ConfigureServices(services =>
         {
+            services.RemoveAll<GenomeSearchDbContext>();
             services.RemoveAll<DbContextOptions<GenomeSearchDbContext>>();
+            services.RemoveAll<IDbContextOptionsConfiguration<GenomeSearchDbContext>>();
             services.AddDbContext<GenomeSearchDbContext>(options =>
                 options.UseInMemoryDatabase(_databaseName));
         });

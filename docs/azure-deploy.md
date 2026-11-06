@@ -25,7 +25,7 @@ production tier. Do not put credentials in the repository or in
 Install or have access to:
 
 - Azure CLI
-- .NET 8 SDK
+- .NET 10 SDK
 - An Azure subscription
 - A resource group
 - An Azure SQL logical server and database
@@ -72,7 +72,7 @@ az webapp create `
   --resource-group $resourceGroup `
   --plan "$appName-plan" `
   --name $appName `
-  --runtime "DOTNETCORE:8.0"
+  --runtime "DOTNETCORE:10.0"
 ```
 
 Azure offer availability and SKU names can change. If `Basic` SQL Database or

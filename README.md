@@ -313,7 +313,7 @@ Data is processed for 15 model organisms based on NCBI taxonomy IDs.
 ## ASP.NET Core Port
 
 The repository also contains an incremental ASP.NET Core port in [`dotnet/`](dotnet/).
-It is a learning and portfolio implementation targeting .NET 8, ASP.NET Core
+It is a learning and portfolio implementation targeting .NET 10, ASP.NET Core
 Web API, EF Core, and Azure SQL.
 
 The port currently includes:

@@ -25,7 +25,7 @@ public sealed class PleiotropyIndexCalculator : IPleiotropyIndexCalculator
         var medianPli = Median(observedPli);
 
         var logTraits = rows
-            // .NET 8 has no Log1p API; integer trait counts make Log(1 + n)
+            // .NET 10 has no Log1p API; integer trait counts make Log(1 + n)
             // equivalent for this port.
             .Select(row => Math.Log(1 + row.TotalRawTraits))
             .ToArray();
